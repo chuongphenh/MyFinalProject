@@ -1,0 +1,64 @@
+﻿@*nhan dien cac file trong thu muc Models*@
+@using MyFinalProject.Models
+@using X.PagedList.Mvc.Core
+@*khai bao kieu du lieu cua Model*@
+@model X.PagedList.IPagedList<News>
+@*doi tuong de goi ham hien thi phan trang*@
+
+@{
+    //import file Layout.cshtml vao day
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+
+
+<div class="col-md-12">
+    <div style="margin-bottom:5px;">
+        <a href="/Admin/News/Create" class="btn btn-primary">Create</a>
+    </div>
+    <div class="panel panel-primary">
+        <div class="panel-heading">List News</div>
+        <div class="panel-body">
+            <table class="table table-bordered table-hover">
+                <tr>
+                    <th style="width:100px;">Photo</th>
+                    <th>Name</th>
+                    <th style="width:70px; text-align:center;">Hot</th>
+                    <th style="width:120px;"></th>
+                </tr>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @*
+                                File.Exists(duongdan) tra ve true neu duongdan ton tai, nguoc lai tra ve false
+                            *@
+                            @if (item.PhotoNews != null && File.Exists(Directory.GetCurrentDirectory() + "\\wwwroot\\Upload\\News\\" + item.PhotoNews))
+                            {
+                                <img src="~/Upload/News/@item.PhotoNews" style="width:100px;">
+                            }
+                        </td>
+                        <td>@item.NameNews</td>
+                        <td style="text-align:center;">
+                            @if(item.HotNews==1)
+                            {
+                                <span class="mdi mdi-check"></span>
+                            }
+                        </td>
+                        <td style="text-align:center;">
+                            <a href="/Admin/News/Update/@item.IdNews">Update</a>&nbsp;
+                            <a href="/Admin/News/Delete/@item.IdNews" onclick="return window.confirm('Are you sure?');">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </table>
+            <style type="text/css">
+                .pagination {
+                    padding: 0px;
+                    margin: 0px;
+                }
+            </style>
+            @Html.PagedListPager(Model, page => Url.Action("Index", new { page = page }) )
+        </div>
+    </div>
+</div>

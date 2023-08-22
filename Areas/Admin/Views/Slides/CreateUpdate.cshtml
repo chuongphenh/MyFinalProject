@@ -1,0 +1,81 @@
+﻿@{
+    //load file layout vao day
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+    //khoi tao cac bien
+    string NameSlide = Model != null ? Model.NameSlide : "";
+    string TitleSlide = Model != null ? Model.TitleSlide : "";
+    string SubTitleSlide = Model != null ? Model.SubTitleSlide : "";
+    string InfoSlide = Model != null ? Model.InfoSlide : "";
+    string Link = Model != null ? Model.Link : "";
+
+}
+@using MyFinalProject.Models
+@functions{
+    public FinalDotnetProjectContext db = new FinalDotnetProjectContext();
+}
+<div class="col-md-12">
+    <div class="panel panel-primary">
+        <div class="panel-heading">Add edit slide</div>
+        <div class="panel-body">
+            @* muon upload duoc file thi phai co thuoc tinh enctype=mulipart/form-data *@
+            <form method="post" enctype="multipart/form-data" action="@ViewBag.action">
+                <!-- rows -->
+                <div class="row" style="margin-top:5px;">
+                    <div class="col-md-2">Name</div>
+                    <div class="col-md-10">
+                        <input type="text" value="@NameSlide" name="Name" class="form-control" required>
+                    </div>
+                </div>
+                <!-- end rows -->
+                <!-- rows -->
+                <div class="row" style="margin-top:5px;">
+                    <div class="col-md-2">Title</div>
+                    <div class="col-md-10">
+                        <input type="text" value="@TitleSlide" name="Title" class="form-control" required>
+                    </div>
+                </div>
+                <!-- end rows -->
+                <!-- rows -->
+                <div class="row" style="margin-top:5px;">
+                    <div class="col-md-2">Sub Title</div>
+                    <div class="col-md-10">
+                        <input type="text" value="@SubTitleSlide" name="SubTitle" class="form-control" >
+                    </div>
+                </div>
+                <!-- end rows -->
+                <!-- rows -->
+                <div class="row" style="margin-top:5px;">
+                    <div class="col-md-2">Info</div>
+                    <div class="col-md-10">
+                        <input type="text" value="@InfoSlide" name="Info" class="form-control" >
+                    </div>
+                </div>
+                <!-- end rows -->
+                <!-- rows -->
+                <div class="row" style="margin-top:5px;">
+                    <div class="col-md-2">Link</div>
+                    <div class="col-md-10">
+                        <input type="text" value="@Link" name="Link" class="form-control" >
+                    </div>
+                </div>
+                <!-- end rows -->
+                <!-- rows -->
+                <div class="row" style="margin-top:5px;">
+                    <div class="col-md-2">Photo</div>
+                    <div class="col-md-10">
+                        <input type="file" name="Photo" />
+                    </div>
+                </div>
+                <!-- end rows -->
+                <!-- rows -->
+                <div class="row" style="margin-top:5px;">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-10">
+                        <input type="submit" value="Process" class="btn btn-primary">
+                    </div>
+                </div>
+                <!-- end rows -->
+            </form>
+        </div>
+    </div>
+</div>

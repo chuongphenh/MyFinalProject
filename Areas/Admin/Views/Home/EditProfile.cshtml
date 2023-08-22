@@ -1,0 +1,57 @@
+﻿@{
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="col-12 grid-margin stretch-card">
+    <div class="card container">
+        <div class="card-body row" style="width:650px; margin:auto;">
+            <h4 class="card-title" style="text-align:center; font-size:larger">Thông tin cá nhân</h4>
+            @*<p class="card-description" style="text-align:center;">@ViewBag.AdminName</p>*@
+            <form class="forms-sample">
+                <div class="form-group row">
+                    <label for="exampleInputEmail3" class="col-sm-3 col-form-label ">Địa chỉ Email:</label>
+                    <div class="col-sm-9">
+                        <input type="text" name="Email" value="@Context.Session.GetString("admin_userName")" class="form-control " disabled id="exampleInputEmail3" placeholder="Email">
+
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label for="exampleInputName1" class="col-sm-3 col-form-label">Họ và tên:</label>
+                    <div class="col-sm-9">
+                        <input type="text" name="Name" value="@Context.Session.GetString("admin_name")" class="form-control " id="exampleInputName1">
+                    </div>
+                </div>
+                
+                 <a class="btn btn-gradient-primary col-sm-4 col-lg-4" href="">Đổi mật khẩu</a>
+                @*
+                <div class="form-group row">
+                <label class="col-sm-3 col-form-label">File upload</label>
+                <div class="col-sm-9">
+                <input type="file" name="img[]" class="file-upload-default">
+                <div class="input-group col-xs-12">
+                <input type="text" class="form-control file-upload-info" disabled placeholder="Upload Image">
+                <span class="input-group-append">
+                <button class="file-upload-browse btn btn-gradient-primary" type="button">Upload</button>
+                </span>
+                </div>
+                </div>
+
+                </div>
+                <div class="form-group row">
+                <label for="exampleInputCity1" class="col-sm-3 col-form-label">City</label>
+                <div class="col-sm-9">
+                <input type="text" class="form-control" id="exampleInputCity1" placeholder="Location">
+                </div>
+                </div>
+                <div class="form-group row">
+                <label for="exampleTextarea1" class="col-sm-3 col-form-label">Textarea</label>
+                <div class="col-sm-9">
+                <textarea class="form-control" id="exampleTextarea1" rows="4"></textarea>
+                </div>
+                </div>*@
+                <div class="form-group row"></div>
+                <button type="submit" class="btn btn-gradient-primary col-sm-12 col-xs-12">Cập nhật thông tin</button>
+            </form>
+        </div>
+    </div>
+</div>

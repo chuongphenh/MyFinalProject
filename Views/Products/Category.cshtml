@@ -1,0 +1,282 @@
+﻿@*nhan dien cac file trong thu muc Models*@
+@using MyFinalProject.Models
+@using X.PagedList.Mvc.Core
+@using X.PagedList;
+@*khai bao kieu du lieu cua Model*@
+@model X.PagedList.IPagedList<Product>
+@*doi tuong de goi ham hien thi phan trang*@
+
+@{
+    //import file Layout.cshtml vao day
+    Layout = "~/Views/Shared/_LayoutShop.cshtml";
+    FinalDotnetProjectContext db = new FinalDotnetProjectContext();
+    int recordCount = db.Products.Count();
+    var name_order = ViewBag.nameOrder;
+
+}
+@functions {
+    FinalDotnetProjectContext db = new FinalDotnetProjectContext();
+    //san pham noi bat -> Hot = 1 (table Products)
+    public List<Product> LastProducts()
+    {
+        var list_record = db.Products.OrderByDescending(item => item.IdProduct).Skip(0).Take(5).ToList();
+        return list_record;
+    }
+    public List<Product> HotProducts1()
+    {
+        List<Product> list_record = db.Products.Where(item => item.HotProduct == 1).Skip(3).Take(3).OrderByDescending(item => item.IdProduct).ToList();
+        return list_record;
+    }
+    //liệt kê các tag thông số của sản phẩm
+    public List<Tag> GetTagsTS(int _ProductId)
+    {
+        List<Tag> list_record = (from item_tag in db.Tags join item_tag_product in db.TagProducts on item_tag.IdTag equals item_tag_product.IdTag join item_product in db.Products on item_tag_product.IdProduct equals item_product.IdProduct where item_product.IdProduct == _ProductId && item_tag.TypeTag == "Thông số" select item_tag).ToList();
+        return list_record;
+    }
+    //liệt kê các tag khuyến của sản phẩm chỉ lấy 1 tag
+    public string GetTagsKM(int _ProductId)
+    {
+        var record = (from item_tag in db.Tags join item_tag_product in db.TagProducts on item_tag.IdTag equals item_tag_product.IdTag join item_product in db.Products on item_tag_product.IdProduct equals item_product.IdProduct where item_product.IdProduct == _ProductId && item_tag.TypeTag == "Khuyến mại" select item_tag.NameTag).FirstOrDefault();
+        return record;
+    }
+}
+
+<div class="product spad " style="width: 1200px; margin: auto; padding-left: 30px;">
+    <div class="container-fluid ">
+        <div class="row">
+            <div class="col-3">
+                <div class="sidebar">
+                    <div class="sidebar__item">
+                        <h4>Giá</h4>
+                        <div class="price-range-wrap">
+                            <div class="price-range ui-slider ui-corner-all ui-slider-horizontal ui-widget ui-widget-content"
+                                 data-min="10" data-max="540">
+                                <div class="ui-slider-range ui-corner-all ui-widget-header"></div>
+                                <span tabindex="0"
+                                      class="ui-slider-handle ui-corner-all ui-state-default"></span>
+                                <span tabindex="0"
+                                      class="ui-slider-handle ui-corner-all ui-state-default"></span>
+                            </div>
+                            <div class="range-slider">
+                                <div class="price-input">
+                                    <input type="text" id="minamount">
+                                    <input type="text" id="maxamount">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sidebar__item">
+                        <div class="widget mercado-widget filter-widget price-filter">
+                            <h2 class="widget-title">Price</h2>
+                            <div class="widget-content">
+                                <input type="number" min="0" id="fromPrice" style="width:100px; border:1px solid #444444;" placeholder="from price"> - <input type="number" min="0" id="toPrice" style="width:100px; border:1px solid #444444" placeholder="to price"> <button onclick="location.href='/Products/Search?fromPrice='+document.getElementById('fromPrice').value+'&toPrice='+document.getElementById('toPrice').value;" class="filter-submit">Filter</button>
+                            </div>
+                        </div><!-- Price-->
+                    </div>
+                    <div class="sidebar__item">
+                        <div class="latest-product__text">
+                            <h4>Sản phẩm mới</h4>
+                            <div class="latest-product__slider owl-carousel">
+                                <div class="latest-prdouct__slider__item">
+                                    @{
+                                        //san pham noi bat
+                                        var hot_products = LastProducts();
+                                        var hot_products1 = HotProducts1();
+                                    }
+                                    @foreach (var item in hot_products)
+                                    {
+                                        <a href="/Products/Detail/@item.IdProduct" class="latest-product__item">
+                                            <div class="latest-product__item__pic">
+                                                <img src="~/Upload/Products/@item.PhotoProduct" alt="@item.NameProduct">
+                                            </div>
+                                            <div class="latest-product__item__text product--info-price">
+                                                <h6>@item.NameProduct</h6>
+                                                <p class="product__price--show">@string.Format("{0:#,0}", @item.PriceProduct).Replace(",", ".")</p>
+                                            </div>
+                                        </a>
+                                    }
+                                </div>
+                                <div class="latest-prdouct__slider__item">
+                                    @foreach (var item in hot_products1)
+                                    {
+                                        <a href="/Products/Detail/@item.IdProduct" class="latest-product__item">
+                                            <div class="latest-product__item__pic">
+                                                <img src="~/Upload/Products/@item.PhotoProduct" alt="@item.NameProduct">
+                                            </div>
+                                            <div class="latest-product__item__text product--info-price">
+                                                <h6>@item.NameProduct</h6>
+                                                <p class="product__price--show">@string.Format("{0:#,0}", @item.PriceProduct).Replace(",", ".")</p>
+                                            </div>
+                                        </a>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+       
+        <div class="col-9 shop__right">
+            <div class="filter__item">
+                <div class="filter__sort">
+                    <span>Sắp xếp theo :</span>
+
+                </div>
+                <select style="z-index:20; opacity:1;" id="order" class="use-chosen select__sort" onchange="sort_order();">
+                    @if (name_order == null)
+                    {
+                        <option value="">Mặc định</option>
+                    }
+                    else
+                    {
+                        <option value="">@name_order</option>
+                    }
+                    <option style="z-index:20; opacity:1;" value="">Mặc định</option>
+                    <option value="name-asc">Tên a-z</option>
+                    <option value="name-desc">Tên z-a</option>
+                    <option style="z-index:20; opacity:1;" value="price-asc">Giá tăng dần</option>
+                    <option style="z-index:20; opacity:1;" value="price-desc">Giá giảm dần</option>
+                </select>
+                <!--tổng số sản phẩm của cửa hàng-->
+                <div class="filter__found">
+
+                    <h6><span>Có</span> @recordCount <span>sản phẩm</span></h6>
+                </div>
+            </div>
+
+
+            <div class="row all_item_sp">
+                @foreach (var item in Model)
+                {
+                    var price_sale = item.PriceProduct * (100 - item.DiscountProduct) / 100.0;
+                    <!--product-->
+                    <div class="col-lg-4 col-md-6 col-sm-6">
+                        <!-- product 1 -->
+                        <div class="featured__product__slider__item product--info-container">
+                            <!-- product info -->
+                            <div class="product--info">
+                                <a href="/Products/Detail/@item.IdProduct">
+                                    <!-- img -->
+                                    <div class="product--info-image">
+                                            <img style=" width: 100%;
+            height: 100%; margin:auto;" src="~/Upload/Products/@item.PhotoProduct" alt="@item.NameProduct">
+                                    </div>
+                                    <div class="product--tag-tt" style="height:18px">
+                                        @{
+                                            var list_tag_sp = GetTagsTS(item.IdProduct);
+                                        }
+                                        @foreach (var item_tag in list_tag_sp)
+                                        {
+                                            <div>@item_tag.NameTag</div>
+                                        }
+
+                                    </div>
+                                    <!-- /img -->
+                                    <!-- name -->
+                                    <div class="product--info-name" style="z-index:1 !important;">
+                                        <p style="z-index:1 !important; font-size:16px">@item.NameProduct</p>
+                                    </div>
+                                    <!-- /name -->
+                                    <!-- price -->
+                                    <div class="product--info-price" >
+                                        <p class="product__price--show" style="font-size:18px; ">
+                                                @string.Format("{0:#,0}", price_sale).Replace(",", ".")<span class="nghin_dong">₫</span>
+                                        </p>
+                                            <p class="product__price--through" style="font-size:16px;">
+                                                @string.Format("{0:#,0}", @item.PriceProduct).Replace(",", ".")<span class="nghin_dong">₫</span>
+                                        </p>
+                                    </div>
+
+                                    <!-- /price -->
+                                    <div class="product__price--percent">
+                                        <p class="product__price--percent-detail">
+                                            Giảm&nbsp;@item.DiscountProduct%
+                                        </p>
+                                    </div>
+                                </a>
+                            </div>
+                            @{
+                                var tag_km = GetTagsKM(item.IdProduct);
+                            }
+                            @if (!String.IsNullOrEmpty(tag_km))
+                            {
+                                <div class="product--tag-km">
+                                    @tag_km
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="product--tag-km" style="background-color:#fff; border:none;">
+                                </div>
+                            }
+
+                            <div class="rating" data-default-rating="0">
+                                <a href="/Products/Rating/@item.IdProduct?star=1" class="star-link" data-product-id="@item.IdProduct">
+                                    <span class="star star1 "
+                                          data-rating="1"><i class="fa fa-star"></i></span>
+                                </a>
+                                <a href="/Products/Rating/@item.IdProduct?star=2" class="star-link" data-product-id="@item.IdProduct">
+                                    <span class="star star2 "
+                                          data-rating="2"><i class="fa fa-star"></i></span>
+                                </a>
+                                <a href="/Products/Rating/@item.IdProduct?star=3" class="star-link" data-product-id="@item.IdProduct">
+                                    <span class="star star3 "
+                                          data-rating="3"><i class="fa fa-star"></i></span>
+                                </a>
+                                <a href="/Products/Rating/@item.IdProduct?star=4" class="star-link" data-product-id="@item.IdProduct">
+                                    <span class="star star4 "
+                                          data-rating="4"><i class="fa fa-star"></i></span>
+                                </a>
+                                <a href="/Products/Rating/@item.IdProduct?star=5" class="star-link" data-product-id="@item.IdProduct">
+                                    <span class="star star5 "
+                                          data-rating="5"><i class="fa fa-star"></i></span>
+                                </a>
+                            </div>
+                            <!-- /product info -->
+                            <div class="product--button">
+                                <a href="/Cart/Buy/@item.IdProduct"><i class="fa-solid fa-cart-plus  margin--right-5px"></i>Thêm vào giỏ hàng</a>
+                            </div>
+                        </div>
+                    </div>
+                    <!--end product-->
+                }
+
+
+
+            </div>
+
+            <div>
+                @{
+                    // Lấy tham số "order" từ ViewBag
+                    string currentOrder = ViewBag.CurrentOrder;
+                }
+
+                @Html.PagedListPager(Model, page => Url.Action("Category", new { id = ViewBag.CategoryId, page = page, order = currentOrder }))
+
+
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+@section scripts{
+    <script language="javascript">
+        function sort_order() {
+
+            //lay value cua id=order
+            var get_value = document.getElementById("order").value;
+            //di chuyen den url
+        @if (ViewBag.CategoryId != null && ViewBag.Category == 0)
+        {
+            <text>location.href = "/Products/Category?order=" + get_value; </text>
+        }
+        else
+        {
+            <text>location.href = "/Products/Category/@ViewBag.CategoryId?order=" + get_value; </text>
+        }
+                       }
+    </script>
+
+}

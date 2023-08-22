@@ -1,0 +1,51 @@
+﻿@{
+    //import file Layout.cshtml vao day
+    Layout = "~/Views/Shared/_LayoutDetail.cshtml";
+}
+@using MyFinalProject.Models
+@functions {
+    public FinalDotnetProjectContext db = new FinalDotnetProjectContext();
+    public List<Order> GetOrders()
+    {
+        int id = (int)Context.Session.GetInt32("customer_id");
+        var list_record = db.Orders.Where(item => item.IdCustomer == id).OrderByDescending(item => item.IdCustomer).ToList();
+        return list_record;
+    }
+}
+<div class="container">
+    <div class="row" style="margin-top:15px; padding:20px;">
+        <h2>Quản lý đơn hàng</h2>
+        <table class="table">
+            <tr>
+                <th>Ngày mua</th>
+                <th>Giá</th>
+                <th>Trạng thái</th>
+            </tr>
+            @{
+                var orders = GetOrders();
+            }
+            @foreach (var item in orders)
+            {
+                <tr>
+                    <td>@String.Format("{0:dd/MM/yyyy HH:mm:ss}", item.DateCreated)</td>
+                    <td>@item.PriceOrder</td>
+                    <td>
+                        @if (item.StatusOrder == 0)
+                        {
+                            <span class="label label-primary">Chưa giao hàng</span>
+                            <a href="/Account/RemoveOrders/@item.IdOrder" class="label label-warning">Hủy đơn hàng</a>
+                        }
+                        else if(item.StatusOrder == 1)
+                        {
+                            <span class="label label-danger">Đã giao hàng</span>
+                        }
+                        else if (item.StatusOrder == 2)
+                        {
+                            <span class="label label-warning">Đã hủy</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>

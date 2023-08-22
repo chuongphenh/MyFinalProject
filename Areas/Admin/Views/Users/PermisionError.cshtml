@@ -1,0 +1,60 @@
+﻿@{
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="col-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="error-container">
+            <img src="~/LayoutAdmin/images/truyCapTuChoi.png" />
+            <h1>Truy cập bị từ chối</h1>
+            <p>Xin lỗi, bạn chưa được phân quyền chức năng này.</p>
+            <a href="/Admin/Home/Index" type="button" class="btn btn-inverse-success btn-fw">Trở về trang bắt đầu!</a>
+        </div>
+
+    </div>
+</div>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f3f3f3;
+    }
+
+    .error-container {
+        height:auto;
+        margin: auto;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        max-width: 430px;
+        text-align: center;
+    }
+
+        .error-container h1 {
+            color: #e74c3c;
+            font-size: 36px;
+            margin-bottom: 10px;
+        }
+
+        .error-container p {
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        /* CSS for the image */
+        .error-container img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto 20px;
+            border-radius: 4px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+            /* Hover effect for the image */
+            .error-container img:hover {
+                transform: scale(1.1);
+            }
+</style>

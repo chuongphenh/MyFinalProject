@@ -1,0 +1,560 @@
+﻿@using MyFinalProject.Models
+@using MyFinalProject.MyClass
+
+@functions {
+    public FinalDotnetProjectContext db = new FinalDotnetProjectContext();
+    //liet ke cac danh muc
+    public List<Category> Categories(int _ParentId)
+    {
+        List<Category> list_record = db.Categories.Where(item => item.IdParent == _ParentId).OrderByDescending(item => item.IdParent).ToList();
+        return list_record;
+    }
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang chủ-Điện máy</title>
+    <link rel="shortcut icon" type="image/png" href="~/LayoutFrontEnd/images/logoMini.png">
+    <link rel="stylesheet" href="~/LayoutFrontEnd/css/style.css">
+    <link rel="stylesheet" href="~/LayoutFrontEnd/css/reset.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="~/LayoutFrontEnd/js/slick-1.8.1/slick/slick.css" />
+    <link rel="stylesheet" type="text/css" href="~/LayoutFrontEnd/js/slick-1.8.1//slick/slick-theme.css" />
+    <link rel="stylesheet" href="~/LayoutFrontEnd/js/script.js">
+    <link href="https://db.onlinewebfonts.com/c/6dced7a785102dc3c41153d07ff3ef13?family=swiper-icons" rel="stylesheet">
+</head>
+
+<body>
+    <div class="wrapper">
+        
+        @await Html.PartialAsync("_PartialHeader")
+
+        <!-- Hero Begin -->
+        <div class="hero container">
+            <!-- Hero Left Begin -->
+            <div class="hero__left">
+                <!-- Hero categories Begin -->
+                <div class="hero__left__categories">
+                    <div class="hero__left__categories__title">
+                        <i class="fas fa-bars"></i>
+                        <span>Danh mục</span>
+                    </div>
+                    <ul>
+                        @{
+                            //lay cac danh muc cha
+                            List<Category> list_parent_categories = Categories(0);
+                        }
+                        @foreach (var item in list_parent_categories)
+                        {
+                            <li style="position: relative;">
+                                <img class="icon_category" src="~/LayoutFrontEnd/images/icon/@item.IconCategory" alt="">
+                                <a href="/Products/Category/@item.IdCategory">
+                                    @switch (item.NameCategory)
+                                    {
+                                        case "Điện thoại":
+                                            item.NameCategory = "Điện thoại, Tablet";
+                                            break;
+                                        case "Đồ gia dụng, Nhà thông minh":
+                                            item.NameCategory = "Gia dụng, Smarthome";
+                                            break;
+                                        case "MÀN HÌNH, MÁY TÍNH ĐỂ BÀN":
+                                            item.NameCategory = "PC, Màn hình";
+                                            break;
+                                    }
+                                    @item.NameCategory
+                                </a>
+                                <i style="color: #777777; position: absolute; right: -12px; top: 8px;" class="fa fa-chevron-right"></i>
+                                @* @{
+                            //lay cac danh muc con
+                            List<Category> list_sub_categories = Categories(item.IdCategory);
+
+                            }
+                            @if (list_sub_categories.Count > 0)
+                            {
+                            <ul class="sub-cate">
+                            @foreach (var subItem in list_sub_categories)
+                            {
+                            ViewBag.totalProducts = GetProductCount(subItem.IdCategory);
+                            <li class="category-item"><a href="/Products/Category/@subItem.IdCategory" class="cate-link">@subItem.NameCategory (@GetProductCount(subItem.IdCategory))</a></li>
+                            }
+                            </ul>
+                            }*@
+                            </li>
+                        }
+
+
+                    </ul>
+                </div>
+                <!-- Hero Categories End -->
+            </div>
+            <!-- Hero Left End-->
+            <!-- Hero Right Begin-->
+            <div class="hero__right">
+                <!-- Hero  Top Begin-->
+                <div class="hero__right__top">
+                    <!-- form search -->
+                    <script language="javascript" src="~/LayoutFrontEnd/js/jquery-3.3.1.min.js"></script>
+                    <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+                    <div class="hero__right__top__search " style="z-index: 1000 !important; position: relative;">
+
+                        <input style="border:none !important" type="text" onkeyup="searchh();" name="searchh" id="searchh" value="" placeholder="Bạn cần tìm gì?" autocomplete="off" onclick="changeBorderColor();" onblur="resetBorderColor();">
+
+                        <button onclick="location.href='/Products/SearchName?key='+document.getElementById('searchh').value;" form="form-search-top" type="button" aria-hidden="true" style=" z-index:1000; outline:none;">
+                                <i class="fa fa-search"></i> Tìm
+                                kiếm
+                            </button>
+                            <div class="smart--search">
+                                <div class="smart--search-tile">
+                                    Sản phẩm gợi ý
+                                </div>
+                                <div class="smart--search-item">
+                                    <a href="" style="display: flex;">
+                                        <img src="~/LayoutFrontEnd/images/products/galaxys22ultra.jpg" alt="">
+                                        <div>
+                                            <p class="smart--search-item__name"> smart--search-item a</p>
+                                            <p class="smart--search-item__price">26.250.000 <span>20.000.000</span> </p>
+                                        </div>
+                                    </a>
+                                </div>
+
+                            </div>
+
+                        <div class="modal-backdropp" id="backdrop1"></div>
+
+                    </div>
+                    <style>
+                        .slider__item{
+                            overflow:hidden;
+                        }
+                        .hero__right__bottom__slider .slick-prev {
+                            left:-40px;
+                            transition:all 0.6s;
+                            background: rgba(0,0,0,0.6);
+                            
+
+                        }
+
+                        .hero__right__bottom__slider .slick-next {
+                            right: -40px;
+                            transition: all 0.6s;
+                            background: rgba(0,0,0,0.6);
+                        }
+
+                        .hero__right__bottom__slider .slick-prev:before {
+                           color:white;
+                        }
+
+                        .hero__right__bottom__slider .slick-next:before {
+                           color:white;
+                        }
+
+                        .hero__right__bottom__slider:hover .slick-prev {
+                            left: 0px;
+                        }
+
+                        .hero__right__bottom__slider:hover .slick-next {
+                            right: 0px;
+                        }
+
+                       
+                        .slick-prev {
+                            align-items: center;
+                            background: #fff;
+                            box-shadow: 0 0 4px 0 rgba(0, 0, 0, .2);
+                            display: flex;
+                            font-size: 1.8rem;
+                            height: 60px;
+                            justify-content: center;
+                            opacity: .8;
+                            outline: none;
+                            top: 50%;
+                            transition: .3s;
+                            width: 30px;
+                            border-radius: 0 100px 100px 0;
+                            left: 0;
+                            padding-right: 10px;
+                            z-index:1;
+                        }
+                        .slick-next{
+                            align-items: center;
+                            background: #fff;
+                            box-shadow: 0 0 4px 0 rgba(0,0,0,.2);
+                            display: flex;
+                            font-size: 1.8rem;
+                            height: 60px;
+                            justify-content: center;
+                            opacity: .8;
+                            outline: none;
+                            top: 50%;
+                            transition: .3s;
+                            width: 30px;
+                            border-radius: 100px 0 0 100px;
+                            padding-left: 10px;
+                            right: 0;
+                        }
+
+                            .slick-prev:before, .slick-next:before {
+                                z-index:1;
+                                position:absolute;
+                                font-family: FontAwesome;
+                                font-size: 24px;
+                                line-height: 1;
+                                color: black;
+                                opacity: 0.75;
+                                -webkit-font-smoothing: antialiased;
+                                -moz-osx-font-smoothing: grayscale;
+                            }
+
+                        .slick-prev:before {
+                            content: "\f053";
+                        }
+
+                        [dir="rtl"] .slick-prev:before {
+                            content: "\f054";
+                        }
+
+                        [dir="rtl"] .slick-next {
+                            left: -10px;
+                            top: 70px;
+                            right: auto;
+                        }
+
+                        .slick-next:before {
+                            content: "\f054";
+                        }
+
+                        [dir="rtl"] .slick-next:before {
+                            content: "\f053";
+                        }
+                        #searchh {
+                            border: none;
+                            color:#000;
+                            /*border-bottom: 2px solid #ff7675 !important; /* Đặt màu viền mặc định */
+                            outline: none; /* Loại bỏ viền xung quanh khi tập trung */
+                            /*transition: border-color 0.6s; /* Hiệu ứng chuyển màu viền */*/
+                            z-index:1000 !important;
+                            display:block;
+                            position:relative;
+                        }
+
+                            #searchh:focus {
+                                border-bottom: 2px solid #d70018 !important; /* Thay đổi màu viền khi tập trung */
+                                z-index: 1000 !important;
+                            }
+                        .smart--search {
+                            position: absolute;
+                            width: 74%;
+                            background: rgb(254, 254, 254);
+                            /* bottom: 50px; */
+                             display: none; 
+                            max-height: 375px;
+                            z-index: 1000 !important;
+                            overflow-y: scroll;
+                        }
+
+                        .smart--search-tile {
+                            background-color: #f3f3f3;
+                            color: #4a4a4a;
+                            padding: 5px 10px;
+                            font-weight: 500;
+                        }
+
+                        .smart--search-item {
+                            display: flex;
+                            border-top: 1px solid #dddddd;
+                            padding: 5px 10px;
+                            line-height: 24px;
+                        }
+
+                            .smart--search-item a {
+                                width: 100%;
+                            }
+
+                        .smart--search-item__name {
+                            padding-top: 10px;
+                            height: 28px;
+                            overflow: hidden;
+                            color: #000;
+                            font-size: 13px;
+                            font-weight: 700;
+                            line-height: 18px;
+                            margin-bottom: 0;
+                        }
+
+                        .smart--search-item__price {
+                            color: #db003b;
+                            font-family: sans-serif;
+                            font-size: 14px;
+                            font-weight: 600;
+                            line-height: 21px;
+                            margin: 0px 4px 0px 0px;
+                        }
+
+                            .smart--search-item__price span {
+                                font-weight: 400;
+                                color: #777777;
+                                font-family: sans-serif;
+                                font-size: 12px;
+                                line-height: 18px;
+                                text-decoration: line-through;
+                            }
+
+                        .smart--search-item:hover {
+                            background-color: #efefef;
+                        }
+
+                        .smart--search-item a img {
+                            width: 60px;
+                            height: 60px;
+                            margin-right: 5px;
+                        }
+                    </style>
+                    <script language="javascript">
+                        //de thuc hien ajax can kiem tra xem trang da load thu vien jquery chua bang code sau
+                        function searchh() {
+                            //lay gia tri cua id=search
+                            var key = document.getElementById("searchh").value;
+                            if (key == "") {
+                                //an smart-search
+                                $(".smart--search").attr("style", "display:none;"); 
+                                $("#backdrop1").attr("style", "display:none;");
+                            }
+                            else {
+                                //---
+                                //su dung ajax de goi den mot url, lay du lieu tra ve
+                                $.ajax({
+                                    url: "/Products/AjaxSearch?key=" + key,
+                                    success: function (result) {
+                                        //clear du lieu trong the ul
+                                        $(".smart--search").empty();
+                                        //do lai du lieu
+                                        $(".smart--search").append(result);
+                                    }
+                                });
+                                //---
+                                $("#backdrop1").attr("style", "display:block;");
+                                $("#searchh").attr("style", "border:none !important;");
+                                //hien thi smart-search
+                                $(".smart--search").attr("style", "display:block ;");
+
+                                
+                               
+                            }
+
+                        }
+                        $('#backdrop1').on('click', () => {
+                            $('#backdrop1').css('display', 'none');
+                            $(".smart--search").attr("style", "display:none;");
+                        });
+                       
+                        function changeBorderColor() {
+                            document.getElementById('searchh').style.border = '2px solid #d70018';
+                        }
+                        function resetBorderColor() {
+                            document.getElementById('searchh').style.border = '';
+                        }
+                    </script>
+              
+                    <!-- /form search -->
+                    <!-- phone 1 -->
+                    <div class="hero__right__top__phone1">
+                        <div class="hero__right__top__phone__icon">
+                            <i class="fa fa-phone"></i>
+                        </div>
+                        <div class="hero__right__top__phone__text">
+                            <h5>0989.999.xxx</h5>
+                            <span>Bán hàng & CSKH</span>
+                        </div>
+                    </div>
+                    <!-- /phone 1 -->
+                    <!-- phone2 -->
+                    <div class="hero__right__top__phone2">
+                        <div class="hero__right__top__phone__icon">
+                            <i class="fa fa-phone"></i>
+                        </div>
+                        <div class="hero__right__top__phone__text">
+                            <h5>0989.999.xxx</h5>
+                            <span>Hỗ trợ kỹ thuật 24/7</span>
+                        </div>
+                    </div>
+                    <!-- /Phone2  -->
+                </div>
+                <!-- Hero Right top End-->
+                <!-- Hero Right Bottom Begin-->
+                <div class="hero__right__bottom">
+                    <!-- Slider -->
+                    <div class="hero__right__bottom__slider ">
+                        @{
+                            List<Slide> list_slide = db.Slides.OrderBy(item=>item.IdSlide).ToList();
+                        }
+                       
+                            <!-- item  -->
+                            <div class="slider__item">
+                                <!-- img -->
+                                <div class="slider__item__image  slider-for">
+                                     @foreach(var item_slide in list_slide)
+                                    {
+                                        <!-- ảnh 1 -->
+                                        <div>
+                                            <a href="@item_slide.Link" target="_blank">
+                                                <img src="~/Upload/Slides/@item_slide.PhotoSlide" alt="@item_slide.TitleSlide">
+                                            </a>
+                                        </div>
+                                        <!-- ảnh 1 end -->
+                                    }
+                                </div>
+                                <!-- /img -->
+                                <!-- content -->
+                                <div class="slider__item__text slider-nav">
+                                     @foreach(var item_slide in list_slide)
+                                      {
+                                        <!-- text1 -->
+                                        <div>
+                                            <div class="text">
+                                                @item_slide.TitleSlide<br>
+                                                @item_slide.SubTitleSlide
+                                            </div>
+                                        </div>
+                                        <!-- text 1 end -->
+                                     }
+                                </div>
+                                <!-- /Content -->
+                            </div>
+                            <!-- /item  -->
+                        
+                       
+                    </div>
+                    <!-- /Slider -->
+                    <!-- ADV -->
+                    <div class="hero__right__bottom__adv">
+                        @{
+                            var adv1 = Advertisement.GetAdv(1);
+                            var adv2 = Advertisement.GetAdv(2);
+                            var adv3 = Advertisement.GetAdv(3);
+                        }
+                        <ul>
+                            @foreach (var item in adv1)
+                            {
+                                <li><a href="@item.LinkAdv" target="_blank"> <img src="~/Upload/Adv/@item.PhotoAdv"></a></li>
+                            }
+                            @foreach (var item in adv2)
+                            {
+                                <li><a href="@item.LinkAdv" target="_blank"> <img src="~/Upload/Adv/@item.PhotoAdv"></a></li>
+                            }
+                            @foreach (var item in adv3)
+                            {
+                                <li><a href="@item.LinkAdv" target="_blank"> <img src="~/Upload/Adv/@item.PhotoAdv"></a></li>
+                            }
+                        </ul>
+                    </div>
+                    <!-- /ADV -->
+                </div>
+                <!-- Hero Right Bottom End-->
+            </div>
+            <!-- Hero Right End-->
+        </div>
+        <!-- Hero End -->
+        @RenderBody()
+
+        <!-- footer begin -->
+        @await Html.PartialAsync("_PartialFooter")
+        <!-- Footer End -->
+    </div>
+    <!-- end wrapper -->
+
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <script type="text/javascript" src="~/LayoutFrontEnd/js/slick-1.8.1/slick/slick.min.js"></script>
+
+    <script type="text/javascript">
+        $('.slider-for').slick({
+            slidesToShow: 1,
+            slidesToScroll: 1,
+            arrows: true,
+            speed: 700,
+            fade: true,
+            cssEase: 'linear',
+            asNavFor: '.slider-nav'
+        });
+        $('.slider-nav').slick({
+            slidesToShow: 5,
+            slidesToScroll: 1,
+            asNavFor: '.slider-for',
+            dots: false,
+            // draggable:true,
+            // swipe:true,
+            arrows: false, // nút prev và next
+            adaptiveHeight: true,
+            focusOnSelect: true,
+            infinite: false,
+            //  tự chạy
+            autoplay: true,
+            autoplaySpeed: 2000
+        });
+
+        $('.slider-nav').on('beforeChange', function (event, slick, currentSlide, nextSlide) {
+            $('.slider-for').slick('slickPause'); // Tạm dừng autoplay của slider lớn khi người dùng chọn
+        });
+
+        $('.slider-nav').on('afterChange', function (event, slick, currentSlide) {
+            $('.slider-for').slick('slickPlay'); // Bật lại autoplay của slider lớn sau khi người dùng kết thúc lựa chọn
+        });
+
+
+
+        $('.autoplay').slick({
+            infinite: false, // Không cho phép lặp vô tận qua các slide
+            arrows: true,
+            slidesToShow: 5,
+            slidesToScroll: 1,
+            autoplay: true,
+            adaptiveHeight: true,
+            autoplaySpeed: 2000
+        });
+        $('.autoplay').on('afterChange', function (event, slick, currentSlide, nextSlide) {
+            if (currentSlide === slick.slideCount - slick.options.slidesToShow) {
+                setTimeout(function () {
+                    $('.autoplay').slick('slickGoTo', 0);
+                }, 4000);
+            }
+        });
+    </script>
+    <script type="text/javascript">
+        window.addEventListener("DOMContentLoaded", function () {
+            var countdownDate = new Date();
+            countdownDate.setDate(countdownDate.getDate() + 3); // Thêm 3 ngày vào thời gian hiện tại
+
+            var countdown = setInterval(function () {
+                var now = new Date().getTime();
+                var distance = countdownDate - now;
+
+                var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                document.getElementById("days").innerHTML = formatTime(days);
+                document.getElementById("hours").innerHTML = formatTime(hours);
+                document.getElementById("minutes").innerHTML = formatTime(minutes);
+                document.getElementById("seconds").innerHTML = formatTime(seconds);
+
+                if (distance < 0) {
+                    clearInterval(countdown);
+                    document.getElementById("timer").innerHTML = "Hết thời gian!";
+                }
+            }, 1000);
+        });
+
+        function formatTime(time) {
+            return time < 10 ? "0" + time : time;
+        }
+
+    </script>
+  
+    @RenderSection("scripts", required: false)
+</body>
+</html> 

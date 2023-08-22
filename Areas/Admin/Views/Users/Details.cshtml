@@ -1,0 +1,116 @@
+﻿@using MyFinalProject.Models
+@{
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+    var list_permision = new MyFinalProject.Models.FinalDotnetProjectContext().Permisions.ToList();
+   
+}
+
+
+<div class="col-lg-5 grid-margin stretch-card gx-4 gy-0">
+    <div class="card">
+        <div class="card-body" style="padding:1.5rem 1.5rem !important; overflow:hidden;">
+            <h4 class="card-title" style="text-align:center;font-size: 1.7rem;padding: 5px;">
+                Thông tin tài khoản
+            </h4>
+            <table class="table" style="overflow:hidden;">
+                <thead>
+                    <tr>
+                        <th> Mã tài khoản</th>
+                        <td style="margin-right:5px; max-width:50%;">@Model.IdUser</td>
+                    </tr>
+                    <tr>
+                        <th> Tên đầy đủ</th>
+                        <td> @Model.NameAccount</td>
+
+                    </tr>
+                    <tr>
+                        <th> Tên đăng nhập</th>
+                        <td>  @Model.NameUser</td>
+
+                    </tr>
+                    <tr>
+                        <th>Mật khẩu</th>
+                        <td style="max-width:30px!important;"> @Model.PasswordUser</td>
+                    </tr>
+                    <tr>
+                        <th> Trạng thái</th>
+                        <td>
+                            @if (Model.StatusUser == true)
+                            {
+                                <text>Đang hoạt động</text>
+                            }
+                            else
+                            {
+                                <text>Đang bị khoá</text>
+                            }
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <th>Ngày tạo</th>
+                        <td>@String.Format("{0:dd/MM/yyyy}", Model.DateCreated)</td>
+                    </tr>
+                </thead>
+
+            </table>
+        </div>
+    </div>
+</div>
+<div class="col-lg-7 grid-margin stretch-card gx-4 gy-0 ">
+    <div class="card">
+        <div class="card-body" style="padding:1.5rem 1.5rem !important">
+            <h4 class="card-title" style="text-align:center;font-size: 1.7rem;padding: 5px;">
+                Bảng phân quyền cho tài khoản
+            </h4>
+            <table class="table table-hover ">
+                <thead>
+                    <tr>
+                        <th>Mã chức năng</th>
+                        <th>Tên chức năng</th>
+                        <th>Phân quyền</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in list_permision)
+                    {
+                        int id_user = Model.IdUser;
+                        string id_per = item.IdPer;
+                        var phan_quyen = new MyFinalProject.Models.FinalDotnetProjectContext().UserPermisions.Count(m => m.IdUser == id_user && m.IdPer == id_per);
+                        <tr>
+                            <td>@item.IdPer</td>
+                            <td>@item.NamePer</td>
+                            <td>
+                                <div class="form-check form-check-success" style="margin:0! important;position:relative;">
+                                    <label class="form-check-label">
+                                        <input style="top:8px!important; position:absolute!important; left:auto;" type="checkbox" class="form-check-input" @Html.Raw(phan_quyen > 0 ? "checked" : "" ) onchange="LuuPhanQuyen('@id_user','@id_per')"> Phân quyền <i class="input-helper"></i>
+                                    </label>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+@section scripts{
+    <script type="text/javascript">
+        function LuuPhanQuyen(id_user, id_per) {
+            //location.href = "/Admin/Users/Decentralization?Id_user=" + Id_user + "&Id_per=" + Id_per;
+            var jsonData = {
+                id_user: id_user,
+                id_per: id_per
+            }
+            $.ajax({
+                url:'/Admin/Users/PhanQuyenJson',
+                type:'post',
+                data: jsonData,
+                dataType: 'JSON',
+                success: function (data){
+                    alert(data.status);
+                }
+            })
+        }
+    </script>
+}
+

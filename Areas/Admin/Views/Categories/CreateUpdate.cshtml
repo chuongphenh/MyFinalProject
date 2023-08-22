@@ -1,0 +1,129 @@
+﻿@using MyFinalProject.Models
+@{
+    //import file Layout.cshtml vao day
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+    //khoi tao cac bien
+    //Chu y: do trong Controller truyen bien DataTable ra ngoai view, vi vay bien Model <=> bien DataTable
+    string Name = Model != null ? Model["name_category"] : "";
+    int ParentId = Model != null ? Convert.ToInt32(Model["id_parent"]) : 0;
+    int DisplayHomePage = Model != null ? Convert.ToInt32(Model["display_home_page"]) : 0;
+}
+@functions {
+    public FinalDotnetProjectContext db = new FinalDotnetProjectContext();
+    //lay cac danh muc cha
+    public List<Category> Categories(int _CurrentId)
+    {
+        List<Category> list_record = db.Categories.Where(item => item.IdParent == 0 && item.IdCategory != _CurrentId).OrderByDescending(item => item.IdCategory).ToList();
+        return list_record;
+    }
+}
+
+<div class="col-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="col-lg-4 mx-auto form-container" style="margin-top:30px;">
+                <div class="img-user">
+                    <i class="mdi mdi-format-list-bulleted menu-icon"></i>
+                    @*<img src="~/LayoutAdmin/images/user-removebg-preview.png" />*@
+                </div>
+                <div class="auth-form-light text-left ">
+                    <!--------------------------Thẻ form ----------------->
+                    <form class="pt-3" method="post" action="@ViewBag.action" style="text-align:left;">
+                        <div class="form-group" style="margin-bottom:0.6rem; margin-top:0.7rem;">
+                            <p style="color:#2d3436; font-weight:600; font-size:26px; text-align:center">  Tạo danh mục mới</p>
+                        </div>
+                        <div class="form-group ">
+                            <div style="position: relative;">
+                                <label for="Name" style="color:#636e72; font-weight:600; font-size:16px;">Tên danh mục</label>
+                                <input style="border-radius: 10px; padding-left: 40px; color:#636e72!important;" type="text" class="form-control form-control-sm" value="@Name" name="Name" id="Name" placeholder="Tên danh mục" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div style="position: relative;">
+                                @{
+                                    int _CurrentId = Model != null ? Convert.ToInt32(Model["id_category"]) : 0;
+                                    List<Category> list_categories = Categories(_CurrentId);
+                                }
+                                <label for="Name" style="color:#636e72; font-weight:600; font-size:16px;">Danh mục cha</label>
+                                <select name="ParentId" class="form-control-sm" style="border-radius: 10px; width:100%; border:1px solid #EEF0F4; color:#636e72" placeholder="Danh mục cha">
+                                    <option value="0"></option>
+                                    @foreach (var item in list_categories)
+                                    {
+                                        string strSelected = "";
+                                        if (Model != null && Convert.ToInt32(Model["id_parent"]) == item.IdCategory)
+                                        {
+                                            strSelected = "selected";
+                                        }
+                                        <option style="color:#2d3436" @strSelected value="@item.IdCategory">@item.NameCategory</option>
+                                    }
+                                </select>
+                            </div>
+                            <p class="error-message" id="userNameError"></p>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-check form-check-success" style="margin-left:20px">
+                                <label class="form-check-label" style="color:#636e72!important">
+                                    <input type="checkbox" class="form-check-input" name="DisplayHomePage" id="DisplayHomePage" @if (Model != null && Convert.ToInt32(Model["display_home_page"]) == 1)
+                                    {
+                                        <text>checked</text>
+                                    }> Hiển thị danh mục này ở trang chủ <i class="input-helper"></i>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <button style="border-radius:10px; font-size:16px" type="submit" class="btn col-12 btn-lg btn-gradient-success">Thêm mới</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .img-user {
+        background-color: #F2F2F2;
+        border-radius: 50% 50%;
+        width: 90px;
+        height: 90px;
+        position: absolute;
+        top: -45px;
+        left: 38%;
+    }
+
+        .img-user i {
+            color: black;
+            z-index: 999;
+            scale: 4.0;
+            position: absolute;
+            top: 36px;
+            left: 37px;
+            max-width: 100%;
+            max-height: 100%;
+            opacity: 0.2;
+        }
+
+    .form-container {
+        height: auto;
+        margin: auto;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        padding: 40px 30px 10px;
+        max-width: 430px;
+        text-align: center;
+        position: relative;
+    }
+
+    .card {
+        background-image: linear-gradient(to right,#CCFED9,#96BCFD); /* Replace these colors with your desired gradient */
+        color: transparent;
+        min-height: 560px;
+    }
+
+    .error-message {
+        color: #ff7675;
+        font-size: 12px;
+        text-align: left;
+    }
+</style>

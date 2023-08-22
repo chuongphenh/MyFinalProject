@@ -1,0 +1,83 @@
+﻿@{
+    //import file Layout.cshtml vao day
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+    //khoi tao cac bien
+    string Name = Model != null ? Model.NameNews : "";
+    string Description = Model != null ? Model.DescriptionNews : "";
+    string Content = Model != null ? Model.ContentNews : "";
+}
+<div class="col-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="panel panel-primary">
+                <div class="panel-heading">Add edit news</div>
+                <div class="panel-body">
+                    @* Muốn upload file thì trong thẻ form phải có thuộc tính sau: enctype="multipart/form-data" *@
+                    <form method="post" enctype="multipart/form-data" action="@ViewBag.action">
+                        <!-- rows -->
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col-md-2">Name</div>
+                            <div class="col-md-10">
+                                <input type="text" value="@Name" name="Name" class="form-control" required>
+                            </div>
+                        </div>
+                        <!-- end rows -->
+                        <!-- rows -->
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col-md-2"></div>
+                            <div class="col-md-10">
+                                @{
+                                    string strChecked = "";
+                                    if (Model != null && Model.HotNews == 1)
+                                    {
+                                        strChecked = "checked";
+                                    }
+                                }
+                                <input type="checkbox" @strChecked id="Hot" name="Hot"> <label for="Hot">Hot</label>
+                            </div>
+                        </div>
+                        <!-- end rows -->
+                        <!-- rows -->
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col-md-2">Photo</div>
+                            <div class="col-md-10">
+                                <input type="file" name="Photo">
+                            </div>
+                        </div>
+                        <!-- end rows -->
+                        <!-- rows -->
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col-md-2">Description</div>
+                            <div class="col-md-10" style="min-height:200px!important; max-height:200px!important; overflow: scroll;">
+                                <textarea name="Description" id="Description">@Description</textarea>
+                                <script>
+                                    ClassicEditor.create(document.querySelector('#Description'));
+                                </script>
+                            </div>
+                        </div>
+                        <!-- end rows -->
+                        <!-- rows -->
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col-md-2">Content</div>
+                            <div class="col-md-10">
+                                <textarea name="Content" id="Content">@Content</textarea>
+                                <script>
+                                    ClassicEditor.create(document.querySelector('#Content'));
+                                </script>
+                            </div>
+                        </div>
+                        <!-- end rows -->
+                        <!-- rows -->
+                        <div class="row" style="margin-top:5px;">
+                            <div class="col-md-2"></div>
+                            <div class="col-md-10">
+                                <input type="submit" value="Process" class="btn btn-primary">
+                            </div>
+                        </div>
+                        <!-- end rows -->
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

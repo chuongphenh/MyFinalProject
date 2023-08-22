@@ -1,0 +1,527 @@
+﻿@{
+    //import file Layout.cshtml vao day
+    Layout = "~/Views/Shared/_LayoutDetail.cshtml";
+}
+@using MyFinalProject.Models
+@functions {
+    public FinalDotnetProjectContext db = new FinalDotnetProjectContext();
+    public List<Category> GetCategoryName(int _ProductId)
+    {
+        var record = (from item_category in db.Categories join item_category_product in db.CategoryProducts on item_category.IdCategory equals item_category_product.IdCategory join item_product in db.Products on item_category_product.IdProduct equals item_product.IdProduct where item_product.IdProduct == _ProductId select item_category).ToList();
+
+        return record;
+    }
+    //lay so sao
+    public int GetStar(int _ProductId, int _Star)
+    {
+        var total = db.Ratings.Where(item => item.IdProduct == _ProductId && item.Star == _Star).Count();
+        return total;
+    }
+    //lay 8 san pham lien quan (cac san pham thuoc cung danh muc)
+    public List<Product> RalativeProducts(int _ProductId)
+    {
+        //lay cac danh muc ma san pham nay thuoc ve (mot san pham co the thuoc nhieu danh muc)
+        var list_categories = (from item_category in db.Categories join item_category_product in db.CategoryProducts on item_category.IdCategory equals item_category_product.IdCategory join item_product in db.Products on item_category_product.IdProduct equals item_product.IdProduct where item_product.IdProduct == _ProductId select item_category).ToList();
+        //duyet list_categories, lay cac san pham
+        List<Product> list_products = new List<Product>();
+        foreach (var item in list_categories)
+        {
+            //lay san pham thuoc danh muc
+            var list_record = (from item_category in db.Categories join item_category_product in db.CategoryProducts on item_category.IdCategory equals item_category_product.IdCategory join item_product in db.Products on item_category_product.IdProduct equals item_product.IdProduct where item_category.IdCategory == item.IdCategory select item_product).ToList();
+            //duyet cac san pham, add san pham vao bien list_products
+            foreach (var item_product in list_record)
+            {
+                list_products.Add(item_product);
+            }
+        }
+        return list_products;
+    }
+    //liệt kê các tag thông số của sản phẩm
+    public List<Tag> GetTagsTS(int _ProductId)
+    {
+        List<Tag> list_record = (from item_tag in db.Tags join item_tag_product in db.TagProducts on item_tag.IdTag equals item_tag_product.IdTag join item_product in db.Products on item_tag_product.IdProduct equals item_product.IdProduct where item_product.IdProduct == _ProductId && item_tag.TypeTag == "Thông số" select item_tag).ToList();
+        return list_record;
+    }
+    //liệt kê các tag khuyến của sản phẩm chỉ lấy 1 tag
+    public List<Tag> GetTagsKM(int _ProductId)
+    {
+        var record = (from item_tag in db.Tags join item_tag_product in db.TagProducts on item_tag.IdTag equals item_tag_product.IdTag join item_product in db.Products on item_tag_product.IdProduct equals item_product.IdProduct where item_product.IdProduct == _ProductId && item_tag.TypeTag == "Khuyến mại" select item_tag).ToList();
+        return record;
+    }
+    //liệt kê các tag khuyến của sản phẩm chỉ lấy 1 tag
+    public string GetTagsKM1(int _ProductId)
+    {
+        var record = (from item_tag in db.Tags join item_tag_product in db.TagProducts on item_tag.IdTag equals item_tag_product.IdTag join item_product in db.Products on item_tag_product.IdProduct equals item_product.IdProduct where item_product.IdProduct == _ProductId && item_tag.TypeTag == "Khuyến mại" select item_tag.NameTag).FirstOrDefault();
+        return record;
+    }
+    public List<News> HotNews()
+    {
+        List<News> list_record = db.News.Where(item => item.HotNews == 1).OrderByDescending(item => item.IdNews).Skip(0).Take(5).ToList();
+        return list_record;
+    }
+}
+
+<div style="margin-top: 110px; line-height:1.5 !important" class="single__product__main">
+    <!-- Product Details Section Begin -->
+    <div class="container" style="width:1200px; margin:auto;">
+        <div class="row">
+            <div class="col-12">
+                <div class="product__details__title">
+                    <h3>
+                        @Model.NameProduct
+                    </h3>
+                    <div class="product__details__title_rating">
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star-half-o"></i>
+                        <span>(18 đánh giá)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row" style="margin-top: 25px;">
+            <div class="col-lg-7 col-md-7">
+                <div class="product__details__images">
+                    <div id="box" style="display: flex; flex-direction: column;">
+                        <div class="box-images">
+
+                            <img src="~/Upload/Products/@Model.PhotoProduct" id="show-image">
+                        </div>
+                        <ul class="sub_images_product">
+                            <li>
+                                <img id="img1" onclick="changeImage('img1');"
+                                     src="~/LayoutFrontEnd/images/products/oppo_flip.jpg">
+                            </li>
+                            <li>
+                                <img id="img2" onclick="changeImage('img2');"
+                                     src="~/LayoutFrontEnd/images/products/oppo-find-n2-flip_3_5.jpg">
+                            </li>
+                            <li>
+                                <img id="img3" onclick="changeImage('img3');"
+                                     src="~/LayoutFrontEnd/images/products/oppo-find-n2-flip_3_4.jpg">
+                            </li>
+                            <li>
+                                <img id="img4" onclick="changeImage('img4');"
+                                     src="~/LayoutFrontEnd/images/products/oppo-find-n2-flip_3_3.jpg">
+                            </li>
+                            <li>
+                                <img id="img5" onclick="changeImage('img5');"
+                                     src="~/LayoutFrontEnd/images/products/oppo-find-n2-flip_3_2.jpg">
+                            </li>
+
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="product__details__information">
+                    <div class="product__details__information__title">
+                        Thông tin sản phẩm
+                    </div>
+                    <div class="product__details__information__content">
+                        <div class="information__content_item d-flex">
+                            <img src="~/LayoutFrontEnd/images/mobile.png" alt="">
+                            <div>
+                                Máy mới 100% , chính hãng Apple Việt Nam.
+                                CellphoneS hiện là đại lý bán lẻ uỷ quyền iPhone chính hãng VN/A của Apple Việt Nam
+                            </div>
+                        </div>
+                        <div class="information__content_item  d-flex">
+                            <img style="width: 25px; height: 26px; margin-left: -3px; margin-top: -3px; margin-right: 14px;" src="~/LayoutFrontEnd/images/box-open.png" alt="">
+                            Hộp, Sách hướng dẫn, Cây lấy sim, Cáp Lightning - Type C
+                        </div>
+                        <div class="information__content_item  d-flex">
+                            <img style="width: 25px; height: 26px; margin-left: -3px; margin-top: 5px; margin-right: 14px; " src="~/LayoutFrontEnd/images/khien.png" alt="">
+                            1 ĐỔI 1 trong 30 ngày nếu có lỗi phần cứng nhà sản xuất. Bảo hành 12 tháng tại trung tâm bảo hành chính hãng Apple : Điện Thoại Vui ASP (Apple Authorized Service Provider)
+                        </div>
+                        <div class="information__content_item  d-flex">
+                            <img style="width: 50px; height: 50px; margin-left: -15px; margin-top: -13px; margin-right: 0px;" src="~/LayoutFrontEnd/images/vat.png" alt="">
+                            Giá sản phẩm đã bao gồm VAT
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-lg-5 col-md-5" style="padding-left: 0">
+                <div class="product__details__text">
+                    <div class="product__details__price d-flex" style="justify-content:space-between">
+                        <div class="d-flex">
+                            <div class="price__show">
+                                @{
+                                    var price_sa = Model.PriceProduct * (100 - Model.DiscountProduct) / 100.0;
+                                    var tra_gop_thang = Model.PriceProduct * 0.072;
+                                    var tra_gop = Model.PriceProduct * 0.33;
+                                }
+                                @string.Format("{0:#,0}", price_sa).Replace(",", ".")₫
+                            </div>
+                            <div class="price__through">
+                                @string.Format("{0:#,0}", Model.PriceProduct).Replace(",", ".")₫
+                            </div>
+                        </div>
+                        <div class="tra_gop">
+                            <span>Trả góp chỉ từ&nbsp;</span>
+                            <span><strong>@string.Format("{0:#,0}", tra_gop_thang).Replace(",", ".")₫</strong>/tháng</span>
+                        </div>
+                    </div>
+                    <div class="promotion">
+                        <div class="promotion__title">
+                            <i class="fa-solid fa-gift" style="margin-right: 10px; font-size: 24px;"></i>
+                            Khuyến mãi
+                        </div>
+                        <div class="promotion__content">
+                            @{
+                                var list_tag_km = GetTagsKM(Model.IdProduct);
+                                int count = 1;
+                            }
+                            @if (list_tag_km == null || list_tag_km.Count == 0)
+                            {
+                                <div class="promotion__content__item d-flex">
+                                    <div class="icon_stt">
+                                        <i class="fa-solid fa-circle"></i>
+                                        <div class="icon_stt_number">
+                                            1
+                                        </div>
+                                    </div>
+                                    <div class="icon__text">
+                                        Hiện tại chưa có khuyến mại cho sản phẩm này
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                @foreach (var item_tag_km in list_tag_km)
+                                {
+                                    <div class="promotion__content__item d-flex">
+                                        <div class="icon_stt">
+                                            <i class="fa-solid fa-circle"></i>
+                                            <div class="icon_stt_number">
+                                                @count
+                                            </div>
+                                        </div>
+                                        <div class="icon__text">
+                                            @item_tag_km.NameTag
+                                        </div>
+                                    </div>
+                                    count++;
+                                }
+                            }
+
+
+                        </div>
+                    </div>
+                    <div class="extra__promotion">
+                        <div class="extra__promotion_title">
+                            ƯU ĐÃI THÊM
+                        </div>
+                        <div class="extra__promotion_content">
+                            <div class="extra__promotion_content__item d-flex">
+                                <div class="icon_tich_xanh">
+                                    <img src="~/LayoutFrontEnd/images/icon/tich_xanh.png" alt="">
+                                </div>
+                                <div class="item_text">
+                                    Giảm thêm tới 1% cho thành viên Smember (áp dụng tùy sản phẩm)
+                                </div>
+                            </div>
+                            <div class="extra__promotion_content__item d-flex">
+                                <div class="icon_tich_xanh">
+                                    <img src="~/LayoutFrontEnd/images/icon/tich_xanh.png" alt="">
+                                </div>
+                                <div class="item_text">
+                                    <img style="width: 55px;" src="~/LayoutFrontEnd/images/icon/vpbank2.png" alt="">
+                                    Giảm thêm 5% tối đa 200.000đ khi thanh toán qua Kredivo
+                                </div>
+                            </div>
+                            <div class="extra__promotion_content__item d-flex">
+                                <div class="icon_tich_xanh">
+                                    <img src="~/LayoutFrontEnd/images/icon/tich_xanh.png" alt="">
+                                </div>
+                                <div class="item_text">
+                                    <img style="width: 45px;" src="~/LayoutFrontEnd/images/icon/vpbank3.png" alt="">
+                                    Mở thẻ tín dụng VIB - Nhận voucher 200.000đ mua hàng tại CellphoneS
+                                </div>
+                            </div>
+                            <div class="extra__promotion_content__item d-flex">
+                                <div class="icon_tich_xanh">
+                                    <img src="~/LayoutFrontEnd/images/icon/tich_xanh.png" alt="">
+                                </div>
+                                <div class="item_text">
+                                    <img style="width: 55px;" src="~/LayoutFrontEnd/images/icon/vpbank4.png" alt="">
+                                    Giảm 500k đơn hàng từ 10 triệu (trừ các sản phẩm Apple)
+                                </div>
+                            </div>
+                            <div class="extra__promotion_content__item d-flex">
+                                <div class="icon_tich_xanh">
+                                    <img src="~/LayoutFrontEnd/images/icon/tich_xanh.png" alt="">
+                                </div>
+                                <div class="item_text">
+                                    <img src="~/LayoutFrontEnd/images/icon/vpbank5.png" alt="">
+                                    Giảm 250k đơn hàng từ 6.5 triệu (trừ các sản phẩm Apple)
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="banner__detail">
+                        <img src="~/LayoutFrontEnd/images/banner__detail.png" alt="">
+                    </div>
+                    <div class="card--buy">
+                        <div class="card--buy-now d-flex">
+                            <a class="buy--now "
+                               href="#">
+                                <strong>MUA NGAY</strong> <br>
+                                (Giao nhanh từ 2 giờ hoặc nhận tại cửa hàng)
+                            </a>
+                            <a href="#" class="buy--add">
+                                <div style="position: relative;">
+                                    <i class="fa-solid fa-cart-plus"></i>
+                                    <span style="font-size: 10px; position: absolute; font-weight: 700; top: 39px;left: 8px;"> Thêm&nbspvào&nbspgiỏ</span>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="d-flex" style="text-align: center; margin-top: 10px;">
+                        <a class="btn--traGop"
+                           href="#">
+                            <strong>TRẢ GÓP 0%</strong><br>
+                            (Trả trước chỉ từ @string.Format("{0:#,0}", tra_gop).Replace(",", ".")₫)
+                        </a>
+                        <a class="btn--Mastercard"
+                           href="#">
+                            <strong>TRẢ GÓP QUA THẺ</strong> <br>
+                            (Visa, Mastercard, JCB)
+                        </a>
+                    </div>
+
+
+                </div>
+            </div>
+            <div class="col-12"> <div style="border-bottom: 3px solid #f5f5f5; padding-top: 15px;"></div></div>
+        </div>
+    </div>
+    </section>
+    <!-- Sản phẩm tương tự -->
+    <section class="related-product" style="margin-top:15px">
+        <!-- Featured phone Begin -->
+        <div class="featured__product container" style="width:1200px; margin:auto;">
+            <!-- title -->
+            <div class="featured__product__title">
+                <a href="">
+                    <h2 style="font-size: 24px;">Sản phẩm tương tự</h2>
+                </a>
+                <a class="display-all" href="/Products/Category">
+                    Xem tất cả
+                </a>
+                <ul>
+                    @{
+                        var list_name_cate = GetCategoryName(Convert.ToInt32(Model.IdProduct));
+                    }
+                    @foreach (var item in list_name_cate)
+                    {
+                        <li><a href="/Products/Category/@item.IdCategory">@item.NameCategory</a></li>
+                    }
+
+
+                </ul>
+            </div>
+            <!-- /title -->
+            <div class="featured__product__slider autoplay">
+                @{
+                    var list_relative_product = RalativeProducts(Convert.ToInt32(Model.IdProduct));
+                }
+                @foreach (Product item in list_relative_product)
+                {
+                    var price_sale = item.PriceProduct * (100 - item.DiscountProduct) / 100.0;
+                    <!--product-->
+                    <div class="featured__product__slider__item product--info-container">
+                        <!-- product info -->
+                        <div class="product--info">
+                            <a href="/Products/Detail/@item.IdProduct">
+                                <!-- img -->
+                                <div class="product--info-image">
+                                    <img src="~/Upload/Products/@item.PhotoProduct" alt="@item.NameProduct">
+                                </div>
+                                <div class="product--tag-tt">
+                                    @{
+                                        var list_tag_sp = GetTagsTS(item.IdProduct);
+                                    }
+                                    @foreach (var item_tag in list_tag_sp)
+                                    {
+                                        <div>@item_tag.NameTag</div>
+                                    }
+
+                                </div>
+                                <!-- /img -->
+                                <!-- name -->
+                                <div class="product--info-name">
+                                    <p>@item.NameProduct</p>
+                                </div>
+                                <!-- /name -->
+                                <!-- price -->
+                                <div class="product--info-price">
+                                    <p class="product__price--show">
+                                        @string.Format("{0:#,0}", price_sale).Replace(",", ".")<span class="nghin_dong">₫</span>
+                                    </p>
+                                    <p class="product__price--through">
+                                        @string.Format("{0:#,0}", @item.PriceProduct).Replace(",", ".")<span class="nghin_dong">₫</span>
+                                    </p>
+                                </div>
+
+                                <!-- /price -->
+                                <div class="product__price--percent">
+                                    <p class="product__price--percent-detail">
+                                        Giảm&nbsp;@item.DiscountProduct%
+                                    </p>
+                                </div>
+                            </a>
+                        </div>
+                        @{
+                            var tag_km = GetTagsKM1(item.IdProduct);
+                        }
+                        @if (!String.IsNullOrEmpty(tag_km))
+                        {
+                            <div class="product--tag-km">
+                                @tag_km
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="product--tag-km" style="background-color:#fff; border:none;">
+                            </div>
+                        }
+
+                        <div class="rating" data-default-rating="0">
+                            <a href="/Products/Rating/@item.IdProduct?star=1" class="star-link" data-product-id="@item.IdProduct">
+                                <span class="star star1 "
+                                      data-rating="1"><i class="fa fa-star"></i></span>
+                            </a>
+                            <a href="/Products/Rating/@item.IdProduct?star=2" class="star-link" data-product-id="@item.IdProduct">
+                                <span class="star star2 "
+                                      data-rating="2"><i class="fa fa-star"></i></span>
+                            </a>
+                            <a href="/Products/Rating/@item.IdProduct?star=3" class="star-link" data-product-id="@item.IdProduct">
+                                <span class="star star3 "
+                                      data-rating="3"><i class="fa fa-star"></i></span>
+                            </a>
+                            <a href="/Products/Rating/@item.IdProduct?star=4" class="star-link" data-product-id="@item.IdProduct">
+                                <span class="star star4 "
+                                      data-rating="4"><i class="fa fa-star"></i></span>
+                            </a>
+                            <a href="/Products/Rating/@item.IdProduct?star=5" class="star-link" data-product-id="@item.IdProduct">
+                                <span class="star star5 "
+                                      data-rating="5"><i class="fa fa-star"></i></span>
+                            </a>
+                        </div>
+                        <!-- /product info -->
+                        <div class="product--button">
+                            <a href="/Cart/Buy/@item.IdProduct"><i class="fa-solid fa-cart-plus  margin--right-5px"></i>Thêm vào giỏ hàng</a>
+                        </div>
+                    </div>
+                    <!--end product-->
+                }
+            </div>
+        </div>
+    </section>
+    <!-- Sản phẩm tương tự /// -->
+
+    <div class="container" style="width:1200px; margin:auto;">
+        <div class="row">
+            <div class="col-12"> <div style="border-top: 3px solid #f5f5f5; margin-top: 20px; padding-top: 20px;"></div></div>
+            <div class="col-8 " style="padding-right: 0">
+                <div class="main--information">
+                    <div class="main--information-top">
+                        @Html.Raw(Model.DescriptionProduct)
+                    </div>
+                    <div class="main--information-bottom">
+                        @Html.Raw(Model.ContentProduct)
+                    </div>
+                    <div class="button--extend">
+                        <button id="toggleButton" style="position: relative;">
+                            Xem thêm <i style=" position: absolute; top:12px; left: 61%;"
+                                        class="fa-solid fa-angle-down"></i>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-4">
+                <div class="sidebar--information">
+                    <div class="sidebar--information-title">
+                        <i style="color: #d70018; margin-right: 5px;" class="fa-regular fa-newspaper"></i> Tin tức về sản phẩm
+                    </div>
+                    <div class="sidebar--information-content">
+                        @{
+                            var list_news = HotNews();
+                        }
+                        @foreach (var item_news in list_news)
+                        {
+
+                            <a href="/News/Detail/@item_news.IdNews">
+                                <div class="item--news-sp">
+                                    <div class="item--news-img">
+                                        <img src="~/Upload/News/@item_news.PhotoNews" alt="@item_news.NameNews">
+                                    </div>
+                                    <div class="item--news-text">
+                                        @item_news.NameNews
+                                    </div>
+                                </div>
+                            </a>
+                        }
+                        <div class="item--news-sp" style="height:35px;">
+
+                            <a href="" class="item--news-button">
+                                Xem tất cả bài viết <i style=" position: absolute; top:10px; left: 72%;" class="fa-solid fa-angle-down"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+@section scripts{
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const ratingContainers = document.querySelectorAll('.rating');
+
+            function highlightStars(rating, stars) {
+                for (let i = 0; i < stars.length; i++) {
+                    if (i < rating) {
+                        stars[i].classList.add('selected');
+                    } else {
+                        stars[i].classList.remove('selected');
+                    }
+                }
+            }
+            ratingContainers.forEach(ratingContainer => {
+                const stars = ratingContainer.querySelectorAll('.star');
+
+                // Đặt giá trị mặc định của đánh giá là 5 sao khi tải trang
+                const defaultRating = 5;
+                highlightStars(defaultRating, stars);
+
+                ratingContainer.addEventListener('mouseover', function (event) {
+                    const targetStar = event.target.closest('.star');
+                    if (targetStar) {
+                        const rating = targetStar.getAttribute('data-rating');
+                        highlightStars(rating, stars);
+                    }
+                });
+                ratingContainer.addEventListener('mouseleave', function () {
+                    highlightStars(defaultRating, stars);
+                });
+            });
+        });
+
+        // mở rộng
+        const toggleButton = document.getElementById('toggleButton');
+        const contentDiv = document.querySelector('.main--information');
+        const buttonDiv = document.querySelector('.button--extend');
+        toggleButton.addEventListener('click', () => {
+            contentDiv.style.maxHeight = contentDiv.scrollHeight + 'px';
+            buttonDiv.style.display = 'none';
+        });
+    </script>
+}

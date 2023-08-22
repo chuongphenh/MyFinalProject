@@ -1,0 +1,619 @@
+﻿@using MyFinalProject.Models
+
+@functions {
+    public FinalDotnetProjectContext db = new FinalDotnetProjectContext();
+    //liet ke cac danh muc
+    public List<Category> Categories(int _ParentId)
+    {
+        List<Category> list_record = db.Categories.Where(item => item.IdParent == _ParentId).OrderByDescending(item => item.IdParent).ToList();
+        return list_record;
+    }
+    int GetProductCount(int _CategoryId)
+    {
+        var record = (from item_category in db.Categories join item_category_product in db.CategoryProducts on item_category.IdCategory equals item_category_product.IdCategory join item_product in db.Products on item_category_product.IdProduct equals item_product.IdProduct where item_category.IdCategory == _CategoryId select item_product).ToList();
+        return record.Count;
+    }
+    //san pham giam gia -> Discount > 0 (table Products)
+    public List<Product> DisCountProducts()
+    {
+        //List<Product> list_record = db.Products.Where(item => item.DiscountProduct > 0).Skip(0).Take(8).OrderByDescending(item => item.IdProduct).ToList();
+        List<Product> list_record = db.Products.Where(item => item.DiscountProduct >= 18 & item.DiscountProduct < 29).Skip(0).Take(8).OrderBy(item => item.IdProduct).ToList();
+        return list_record;
+    }
+    //liệt kê các tag khuyến của sản phẩm chỉ lấy 1 tag
+    public string GetTagsKM(int _ProductId)
+    {
+        var record = (from item_tag in db.Tags join item_tag_product in db.TagProducts on item_tag.IdTag equals item_tag_product.IdTag join item_product in db.Products on item_tag_product.IdProduct equals item_product.IdProduct where item_product.IdProduct == _ProductId && item_tag.TypeTag == "Khuyến mại" select item_tag.NameTag).FirstOrDefault();
+        return record;
+    }
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cửa hàng-Điện máy</title>
+    <link rel="shortcut icon" type="image/png" href="~/LayoutFrontEnd/images/logoMini.png">
+    <link rel="stylesheet" href="~/LayoutFrontEnd/css/style.css">
+    <link rel="stylesheet" href="~/LayoutFrontEnd/css/reset.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+
+    <link rel="stylesheet" type="text/css" href="~/LayoutFrontEnd/js/slick-1.8.1/slick/slick.css" />
+    <link rel="stylesheet" type="text/css" href="~/LayoutFrontEnd/js/slick-1.8.1//slick/slick-theme.css" />
+    <!--  -->
+    <link rel="stylesheet" href="~/LayoutFrontEnd/css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="~/LayoutFrontEnd/css/font-awesome.min.css" type="text/css">
+    <link rel="stylesheet" href="~/LayoutFrontEnd/css/elegant-icons.css" type="text/css">
+    <link rel="stylesheet" href="~/LayoutFrontEnd/css/nice-select.css" type="text/css">
+    <link rel="stylesheet" href="~/LayoutFrontEnd/css/jquery-ui.min.css" type="text/css">
+    <link rel="stylesheet" href="~/LayoutFrontEnd/css/owl.carousel.min.css" type="text/css">
+    <link rel="stylesheet" href="~/LayoutFrontEnd/css/slicknav.min.css" type="text/css">
+
+</head>
+
+<style>
+    .product--button{
+        left:0;
+    }
+    .product--info-container:hover .product--button {
+        bottom: 1px;
+        left:0;
+        opacity: 1;
+        /* Khi hover, hiển thị nút với opacity = 1 */
+        pointer-events: auto;
+        /* Cho phép sự kiện chuột trên nút */
+        transform: translateY(0);
+        /* Di chuyển nút lên 0, hiển thị nút */
+    }
+</style>
+<body>
+    <!-- block-breadcrumbs -->
+    <div class="block-breadcrumbs">
+        <ul class="container ">
+            <li>
+                <a href="index.html">
+                    <i style="color: #d70018; padding-right: 5px;" class="fas fa-home"></i> Trang
+                    chủ
+                </a>
+            </li>
+            <li> <i style="padding: 0 10px;" class="fa fa-chevron-right"></i> Cửa hàng</li>
+        </ul>
+    </div>
+    <!-- block-breadcrumbs end -->
+    <style>
+        .block-breadcrumbs {
+            background-color: white;
+            position: fixed;
+            box-shadow: #909090 0px 1px 6px -1px;
+            z-index: 1000000;
+            width: 100%;
+            top: 100px;
+            padding: 5px 0;
+            color: #909090;
+        }
+
+            .block-breadcrumbs ul li {
+                font-size: 12px;
+                display: inline-block;
+            }
+
+                .block-breadcrumbs ul li a {
+                    color: #909090;
+                }
+
+        .hero__left__categories ul {
+            height: 400px;
+        }
+
+            .hero__left__categories ul li {
+                padding: 3px 0;
+            }
+
+                .hero__left__categories ul li a {
+                    font-size: 14px;
+                }
+
+        .icon_category {
+            width: 30px !important;
+        }
+
+        .hero__left__categories {
+            width: 250px;
+        }
+
+        .hero {
+            margin-top: 150px;
+            display: flex;
+        }
+
+        .hero__right__top__search {
+            flex-basis: 58%;
+            height: 43px;
+            border: 1px solid #ebebeb;
+            position: relative;
+            float: left;
+            overflow: hidden;
+            margin-right: 20px;
+        }
+
+        .hero__right__top__phone1 {
+            flex-basis: 21%;
+            margin-right: 10px;
+        }
+
+        .hero__right__top__phone2 {
+            flex-basis: 21%;
+        }
+
+        .hero__right__bottom {
+            position: relative;
+            margin-top: -22px;
+            max-width: 100%;
+            height: 440px;
+        }
+
+
+        .hot-sale__content {
+            width: 870px;
+        }
+
+        .hot-sale__title {
+            max-height: 45px;
+        }
+
+        .hot-sale__title__img img {
+            margin-top: -18px;
+        }
+
+        #countdown {
+            height: 100%;
+            margin-top: -30px;
+        }
+
+        .sidebar {
+            width: 250px;
+        }
+
+        .shop__right {
+            width: 900px;
+        }
+
+        .filter__item {
+            /*margin-left: 80px;*/
+            position: relative;
+            margin-bottom: 10px;
+        }
+
+        .select__sort {
+            position: absolute;
+            top: -9px;
+            left: 80px;
+            border: none;
+        }
+
+        .filter__sort {
+            font-size: 14px;
+            color: #6f6f6f;
+            z-index: 2;
+        }
+
+        h6 span {
+            color: #6f6f6f;
+        }
+
+        .filter__found {
+            position: absolute;
+            top: 0;
+            left: 400px;
+        }
+
+        .all_item_sp {
+            /*margin-left: 60px;*/
+        }
+
+        .product__pagination {
+            transform: translate(50%);
+        }
+
+        .product__item {
+            width: 110% !important;
+        }
+
+        .product--info-container {
+            /* margin:0 20px 20px; */
+            padding: 5px;
+        }
+
+        .latest-product__item {
+            display: flex;
+            margin-bottom: 7px;
+        }
+
+        .latest-product__item__pic img {
+            height: 110px;
+            width: 110px;
+        }
+
+        .latest-product__item__text {
+            overflow: hidden;
+            padding-top: 10px;
+        }
+
+            .latest-product__item__text h6 {
+                color: #252525;
+                margin-bottom: 8px;
+            }
+
+            .latest-product__item__text span {
+                font-size: 18px;
+                display: block;
+                color: #c71717;
+                font-weight: 700;
+            }
+
+        .latest-product__text h4 {
+            margin-bottom: 2px;
+            padding: 0;
+        }
+
+        .owl-nav {
+            margin-top: -70px;
+        }
+
+        .latest-product__slider.owl-carousel .owl-nav button {
+            height: 30px;
+            width: 30px;
+            background: #F3F6FA;
+            border: 1px solid #e6e6e6;
+            font-size: 14px;
+            color: #636363;
+            margin-right: 10px;
+            line-height: 30px;
+            text-align: center;
+        }
+
+        .product,
+        .spad {
+            margin-top: 20px;
+        }
+
+
+
+       
+    </style>
+    <div class="wrapper">
+        @await Html.PartialAsync("_PartialHeader")
+        <!-- Hero Begin -->
+        <div class="hero container">
+            <!-- Hero Left Begin -->
+            <div class="hero__left">
+                <!-- Hero categories Begin -->
+                <div class="hero__left__categories">
+                    <div class="hero__left__categories__title">
+                        <i class="fas fa-bars"></i>
+                        <span>Danh mục</span>
+                    </div>
+                    <ul>
+                        @{
+                            //lay cac danh muc cha
+                            List<Category> list_parent_categories = Categories(0);
+                        }
+                        @foreach (var item in list_parent_categories)
+                        {
+                            <li style="position: relative;">
+                                <img class="icon_category" src="~/LayoutFrontEnd/images/icon/@item.IconCategory" alt=""><a href="/Products/Category/@item.IdCategory">
+                                    @switch (item.NameCategory)
+                                    {
+                                        case "Điện thoại":
+                                            item.NameCategory = "Điện thoại, Tablet";
+                                            break;
+                                        case "Đồ gia dụng, Nhà thông minh":
+                                            item.NameCategory = "Gia dụng, Smarthome";
+                                            break;
+                                        case "MÀN HÌNH, MÁY TÍNH ĐỂ BÀN":
+                                            item.NameCategory = "PC, Màn hình";
+                                            break;
+                                    }
+                                    @item.NameCategory (@GetProductCount(item.IdCategory))
+                                </a>
+                                <i style="color: #777777; position: absolute; right: -12px; top: 9px;" class="fa fa-chevron-right"></i>
+                               @* @{
+                                    //lay cac danh muc con
+                                    List<Category> list_sub_categories = Categories(item.IdCategory);
+                                   
+                                }
+                                @if (list_sub_categories.Count > 0)
+                                {
+                                    <ul class="sub-cate">
+                                        @foreach (var subItem in list_sub_categories)
+                                        {
+                                            ViewBag.totalProducts = GetProductCount(subItem.IdCategory);
+                                            <li class="category-item"><a href="/Products/Category/@subItem.IdCategory" class="cate-link">@subItem.NameCategory (@GetProductCount(subItem.IdCategory))</a></li>
+                                        }
+                                    </ul>
+                                }*@
+                            </li>
+                        }
+
+
+                    </ul>
+                </div>
+                <!-- Hero Categories End -->
+            </div>
+            <!-- Hero Left End-->
+            <!-- Hero Right Begin-->
+            <div class="hero__right">
+                <!-- Hero  Top Begin-->
+                <div class="hero__right__top">
+                    <!-- form search -->
+                    <div class="hero__right__top__search">
+                        <form action="#">
+                            <input type="text" placeholder="Bạn cần tìm gì?">
+                            <button type="submit">Tìm kiếm</button>
+                        </form>
+                    </div>
+                    <!-- /form search -->
+                    <!-- phone 1 -->
+                    <div class="hero__right__top__phone1">
+                        <div class="hero__right__top__phone__icon">
+                            <i class="fa fa-phone"></i>
+                        </div>
+                        <div class="hero__right__top__phone__text">
+                            <h5>0989.999.xxx</h5>
+                            <span>Bán hàng & CSKH</span>
+                        </div>
+                    </div>
+                    <!-- /phone 1 -->
+                    <!-- phone2 -->
+                    <div class="hero__right__top__phone2">
+                        <div class="hero__right__top__phone__icon">
+                            <i class="fa fa-phone"></i>
+                        </div>
+                        <div class="hero__right__top__phone__text">
+                            <h5>0989.999.xxx</h5>
+                            <span>Hỗ trợ kỹ thuật 24/7</span>
+                        </div>
+                    </div>
+                    <!-- /Phone2  -->
+                </div>
+                <!-- Hero Right top End-->
+                <!-- Hero Right Bottom Begin-->
+                <div class="hero__right__bottom">
+                    <!-- Hot Sale Begin -->
+                    <div class="hot-sale container">
+                        <!-- title -->
+                        <div class="hot-sale__title">
+                            <!-- img -->
+                            <div class="hot-sale__title__img">
+                                <img src="~/LayoutFrontEnd/images/xa-kho-khet-sticker-hs.png" alt="">
+                            </div>
+                            <!-- /img -->
+                            <!-- countdown -->
+                            <div class="hot-sale__title__countdown">
+                                <div id="countdown">
+                                    <div id="timer">
+                                        Kết thúc sau :
+                                        <span id="days"></span> :
+                                        <span id="hours"></span> :
+                                        <span id="minutes"></span> :
+                                        <span id="seconds"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /countdown -->
+                        </div>
+                        <!-- /title -->
+                        <!-- content -->
+                        <div class="hot-sale__content product-sale autoplay">
+                            @{
+                                var list_products_sale = DisCountProducts();
+                            }
+                            @foreach (var item in list_products_sale)
+                            {
+                                var price_sale = (item.PriceProduct * (100 - item.DiscountProduct) / 100.0);
+                                <!-- product 1 -->
+                                <div class="featured__product__slider__item product--info-container">
+                                    <!-- product info -->
+                                    <div class="product--info">
+                                        <a href="/Products/Detail/@item.IdProduct">
+                                            <!-- img -->
+                                            <div class="product--info-image">
+                                                <img style="margin:10px 3px !important" src="~/Upload/Products/@item.PhotoProduct" alt="@item.NameProduct">
+                                            </div>
+                                            @*  <div class="product--tag-tt" >
+                                        @{
+                                        var list_tag_sp = GetTagsTS(item.IdProduct);
+                                        }
+                                        @foreach (var item_tag in list_tag_sp)
+                                        {
+                                        <div>@item_tag.NameTag</div>
+                                        }
+
+                                        </div>*@
+                                            <!-- /img -->
+                                            <!-- name -->
+                                            <div class="product--info-name">
+                                                <p>@item.NameProduct</p>
+                                            </div>
+                                            <!-- /name -->
+                                            <!-- price -->
+                                            <div class="product--info-price">
+                                                <p class="product__price--show" style="font-size:15px">
+                                                    @string.Format("{0:#,0}", price_sale)<span class="nghin_dong">₫</span>
+                                                </p>
+                                                <p class="product__price--through" style="font-size:13px">
+                                                    @string.Format("{0:#,0}", @item.PriceProduct)<span class="nghin_dong">₫</span>
+                                                </p>
+                                            </div>
+
+                                            <!-- /price -->
+                                            <div class="product__price--percent">
+                                                <p class="product__price--percent-detail">
+                                                    Giảm&nbsp;@item.DiscountProduct%
+                                                </p>
+                                            </div>
+                                        </a>
+                                    </div>
+                                   @* @{
+                                        var tag_km = GetTagsKM(item.IdProduct);
+                                    }
+                                    @if (!String.IsNullOrEmpty(tag_km))
+                                    {
+                                        <div class="product--tag-km">
+                                            @tag_km
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="product--tag-km" style="background-color:#fff; border:none;">
+                                        </div>
+                                    }*@
+
+                                    <div class="rating" data-default-rating="0">
+                                        <a href="/Products/Rating/@item.IdProduct?star=1" class="star-link" data-product-id="@item.IdProduct">
+                                            <span style="font-size:13px" class="star star1 "
+                                                  data-rating="1"><i class="fa fa-star"></i></span>
+                                        </a>
+                                        <a href="/Products/Rating/@item.IdProduct?star=2" class="star-link" data-product-id="@item.IdProduct">
+                                            <span style="font-size:13px" class="star star2 "
+                                                  data-rating="2"><i class="fa fa-star"></i></span>
+                                        </a>
+                                        <a href="/Products/Rating/@item.IdProduct?star=3" class="star-link" data-product-id="@item.IdProduct">
+                                            <span style="font-size:13px" class="star star3 "
+                                                  data-rating="3"><i class="fa fa-star"></i></span>
+                                        </a>
+                                        <a href="/Products/Rating/@item.IdProduct?star=4" class="star-link" data-product-id="@item.IdProduct">
+                                            <span style="font-size:13px" class="star star4 "
+                                                  data-rating="4"><i class="fa fa-star"></i></span>
+                                        </a>
+                                        <a href="/Products/Rating/@item.IdProduct?star=5" class="star-link" data-product-id="@item.IdProduct">
+                                            <span style="font-size:13px" class="star star5 "
+                                                  data-rating="5"><i class="fa fa-star"></i></span>
+                                        </a>
+                                    </div>
+                                    <!-- /product info -->
+                                    <div class="product--button">
+                                        <a href="/Cart/Buy/@item.IdProduct"><i class="fa-solid fa-cart-plus  margin--right-5px"></i>Thêm vào giỏ hàng</a>
+                                    </div>
+                                </div>
+                                <!-- /product 1 -->
+                            }
+
+
+
+                        </div>
+                        <!--/content  -->
+                    </div>
+                    <!-- Hot Sale End -->
+                </div>
+                <!-- Hero Right Bottom End-->
+            </div>
+            <!-- Hero Right End-->
+        </div>
+        <!-- Hero End -->
+        <!-- Product Section Begin -->
+        @RenderBody()
+
+        <!-- footer begin -->
+        @await Html.PartialAsync("_PartialFooter")
+        <!-- Footer End -->
+        <style>
+            .header__main {
+                box-shadow: none;
+            }
+        </style>
+        <script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+        <script type="text/javascript" src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+        <script type="text/javascript" src="~/LayoutFrontEnd/js/slick-1.8.1/slick/slick.min.js"></script>
+        <script type="text/javascript">
+            $('.autoplay').slick({
+                slidesToShow: 4,
+                slidesToScroll: 3,
+                autoplay: true,
+                adaptiveHeight: true,
+                autoplaySpeed: 2000,
+            });
+        </script>
+
+        <script>
+            window.addEventListener("DOMContentLoaded", function () {
+                var countdownDate = new Date();
+                countdownDate.setDate(countdownDate.getDate() + 3); // Thêm 3 ngày vào thời gian hiện tại
+
+                var countdown = setInterval(function () {
+                    var now = new Date().getTime();
+                    var distance = countdownDate - now;
+
+                    var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                    var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                    var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                    var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                    document.getElementById("days").innerHTML = formatTime(days);
+                    document.getElementById("hours").innerHTML = formatTime(hours);
+                    document.getElementById("minutes").innerHTML = formatTime(minutes);
+                    document.getElementById("seconds").innerHTML = formatTime(seconds);
+
+                    if (distance < 0) {
+                        clearInterval(countdown);
+                        document.getElementById("timer").innerHTML = "Hết thời gian!";
+                    }
+                }, 1000);
+            });
+
+            function formatTime(time) {
+                return time < 10 ? "0" + time : time;
+            }
+        </script>
+
+        <!-- Js Plugins -->
+        <script src="~/LayoutFrontEnd/js/jquery-3.3.1.min.js"></script>
+        <script src="~/LayoutFrontEnd/js/bootstrap.min.js"></script>
+        <script src="~/LayoutFrontEnd/js/jquery.nice-select.min.js"></script>
+        <script src="~/LayoutFrontEnd/js/jquery-ui.min.js"></script>
+        <script src="~/LayoutFrontEnd/js/jquery.slicknav.js"></script>
+        <script src="~/LayoutFrontEnd/js/mixitup.min.js"></script>
+        <script src="~/LayoutFrontEnd/js/owl.carousel.min.js"></script>
+        <script src="~/LayoutFrontEnd/js/main.js"></script>
+
+    </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const ratingContainers = document.querySelectorAll('.rating');
+
+                function highlightStars(rating, stars) {
+                    for (let i = 0; i < stars.length; i++) {
+                        if (i < rating) {
+                            stars[i].classList.add('selected');
+                        } else {
+                            stars[i].classList.remove('selected');
+                        }
+                    }
+                }
+                ratingContainers.forEach(ratingContainer => {
+                    const stars = ratingContainer.querySelectorAll('.star');
+
+                    // Đặt giá trị mặc định của đánh giá là 5 sao khi tải trang
+                    const defaultRating = 5;
+                    highlightStars(defaultRating, stars);
+
+                    ratingContainer.addEventListener('mouseover', function (event) {
+                        const targetStar = event.target.closest('.star');
+                        if (targetStar) {
+                            const rating = targetStar.getAttribute('data-rating');
+                            highlightStars(rating, stars);
+                        }
+                    });
+                    ratingContainer.addEventListener('mouseleave', function () {
+                        highlightStars(defaultRating, stars);
+                    });
+                });
+            });
+        </script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>

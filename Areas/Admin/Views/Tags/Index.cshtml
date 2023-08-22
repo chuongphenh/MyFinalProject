@@ -1,0 +1,47 @@
+﻿@{
+    //load file Layout.cshtml vao day
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+@* de phan trang thi phai using cac doi tuong sau *@
+@using X.PagedList
+@using X.PagedList.Mvc.Core
+@using MyFinalProject.Models
+@functions{
+    FinalDotnetProjectContext db = new FinalDotnetProjectContext();
+}
+<div class="col-md-12">
+    <div style="margin-bottom:5px;">
+        <a href="/Admin/Tags/Create" class="btn btn-primary">Add tags</a>
+    </div>
+    <div class="panel panel-primary">
+        <div class="panel-heading">List Tag</div>
+        <div class="panel-body">
+            <table class="table table-bordered table-hover">
+                <tr>
+                    <th>Name</th>
+                    <th>Loại thẻ</th>
+                    <th style="width:100px;"></th>
+                </tr>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.NameTag</td>
+                        <td>@item.TypeTag</td>
+                        <td style="text-align:center;">
+                            <a href="/Admin/Tags/Update/@item.IdTag">Edit</a>&nbsp;
+                            <a href="/Admin/Tags/Delete/@item.IdTag" onclick="return window.confirm('Are you sure?');">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </table>
+            <style type="text/css">
+                .pagination {
+                    padding: 0px;
+                    margin: 0px;
+                }
+            </style>
+            @* ham sau se thuc hien viec hien thi phan trang *@
+            @Html.PagedListPager((IPagedList)Model, p => Url.Action("Index", new { page = p }))
+        </div>
+    </div>
+</div>

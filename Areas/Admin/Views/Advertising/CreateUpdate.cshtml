@@ -1,0 +1,73 @@
+﻿@{
+    //load file layout vao day
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+    //khoi tao cac bien
+    string NameAdv = Model != null ? Model.NameAdv : "";
+    string LinkAdv = Model != null ? Model.LinkAdv : "";
+    int PositonAdv = Model != null ? Model.PositionAdv : 0;
+}
+@using MyFinalProject.Models
+@functions{
+    public FinalDotnetProjectContext db = new FinalDotnetProjectContext();
+}
+<div class="col-md-12">
+    <div class="panel panel-primary">
+        <div class="panel-heading">Add edit adv</div>
+        <div class="panel-body">
+            @* muon upload duoc file thi phai co thuoc tinh enctype=mulipart/form-data *@
+            <form method="post" enctype="multipart/form-data" action="@ViewBag.action">
+                <!-- rows -->
+                <div class="row" style="margin-top:5px;">
+                    <div class="col-md-2">Name</div>
+                    <div class="col-md-10">
+                        <input type="text" value="@NameAdv" name="Name" class="form-control" required/>
+                    </div>
+                </div>
+                <!-- end rows -->
+                <!-- rows -->
+                <div class="row" style="margin-top:5px;">
+                    <div class="col-md-2">Position</div>
+                    <div class="col-md-10">
+                        <select name="Position" class="form-control" style="width:250px;">
+                            <option @if (PositonAdv == 1) { <text> selected</text> } value="1">Trang chủ( bên phải slide show- thứ 1)</option>
+                            <option @if (PositonAdv == 2) { <text> selected</text> } value="2">Trang chủ( bên phải slide show- thứ 2)</option>
+                            <option @if (PositonAdv == 3) { <text> selected</text> } value="3">Trang chủ( bên phải slide show- thứ 3)</option>
+                             <option @if (PositonAdv == 4) { <text> selected</text> } value="4">Trang chủ( ưu đãi thanh toán- thứ 1)</option>
+                              <option @if (PositonAdv == 5) { <text> selected</text> } value="5">Trang chủ( ưu đãi thanh toán- thứ 2)</option>
+                               <option @if (PositonAdv == 6) { <text> selected</text> } value="6">Trang chủ( ưu đãi thanh toán- thứ 3)</option>
+                                <option @if (PositonAdv == 7) { <text> selected</text> } value="7">Trang chủ( ưu đãi thanh toán- thứ 4)</option>
+                          @*  <option @if (Model != null && Model.PositionAdv == 4) { <text> selected</text> } value="4">Trang sản phẩm - Dưới TAG</option>
+                            <option @if (Model != null && Model.PositionAdv == 5) { <text> selected</text> } value="5">Trang sản phẩm - Dưới Popular products</option>*@
+                        </select>
+                    </div>
+                </div>
+                <!-- end rows -->
+                <div class="row" style="margin-top:5px;">
+                    <div class="col-md-2">Link</div>
+                    <div class="col-md-10">
+                        <input type="text" value="@LinkAdv" name="Link" class="form-control" required />
+                    </div>
+                </div>
+
+
+                <!-- rows -->
+                <div class="row" style="margin-top:5px;">
+                    <div class="col-md-2">Photo</div>
+                    <div class="col-md-10">
+                        <input type="file" name="Photo" />
+                    </div>
+                </div> 
+            
+                <!-- end rows -->
+                <!-- rows -->
+                <div class="row" style="margin-top:5px;">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-10">
+                        <input type="submit" value="Process" class="btn btn-primary">
+                    </div>
+                </div>
+                <!-- end rows -->
+            </form>
+        </div>
+    </div>
+</div>

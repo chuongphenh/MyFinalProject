@@ -1,0 +1,235 @@
+﻿@{
+    string str = "";
+    string Result = "";
+    string name = Context.Session.GetString("customer_name");
+
+    // Function để lấy tên cuối cùng trong chuỗi
+    string GetLastName(string fullName)
+    {
+        if (string.IsNullOrEmpty(fullName))
+        {
+            return string.Empty;
+        }
+        
+        // Tách chuỗi thành mảng các từ
+        string[] words = fullName.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+        
+        // Lấy từ cuối cùng trong mảng là tên cuối cùng
+        return words[words.Length - 1];
+    }
+
+    // Gán kết quả vào biến str
+    Result = GetLastName(name);
+}
+<!-- header begin -->
+<header class="header">
+    <!-- header top-->
+    <div class="header__top">
+        <!-- header top 1-->
+        <div class="header__top__item">
+            <img src="~/LayoutFrontEnd/images/top-banner-chinh-sach-bao-hanh-doi-tra.jpg" alt="">
+        </div>
+        <!-- end header top 1-->
+        <!-- header top 2-->
+        <div class="header__top__item">
+            <img src="~/LayoutFrontEnd/images/top-banner-chinh-hang-xuat-vat-day-du.jpg" alt="">
+        </div>
+        <!-- end header top 2-->
+        <!-- header top 3-->
+        <div class="header__top_item">
+            <img src="~/LayoutFrontEnd/images/top-banner-giao-nhanh-mien-phi.jpg" alt="">
+        </div>
+        <!-- end header top 3-->
+    </div>
+    <!-- end header top-->
+    <!-- header main-->
+    <div class="header__main">
+        <div style="width: 1200px; margin: auto; display: flex;">
+            <!-- header main logo-->
+            <div class="header__main__logo">
+                <a href="/Home"><img src="~/LayoutFrontEnd/images/logo.png" alt=""></a>
+            </div>
+            <!-- end header main logo-->
+            <!-- header main menu-->
+            @{
+                string currentController = ViewContext.RouteData.Values["controller"].ToString();
+            }
+
+            <nav class="header__main__menu">
+                <ul>
+                    <li class="@((currentController == "Home") ? "active" : "")"><a href="/Home">Trang chủ</a></li>
+                    <li class="@((currentController == "YourControllerNameHere") ? "active" : "")"><a href="./shop-grid.html">Giới thiệu</a>
+                        
+                    
+                    </li>
+                    <li class="@((currentController == "YourControllerNameHere") ? "active" : "")"><a href="#">Tin tức</a>
+                        <ul class="header__main__menu__dropdown">
+                            <li><a href="#">Thị trường</a></li>
+                            <li><a href="#">Mẹo hay</a></li>
+                            <li><a href="#">Đánh giá</a></li>
+                            <li><a href="#">Cuộc sống số</a></li>
+                        </ul>
+                    
+                    
+                    </li>
+                    <li class="@((currentController == "Products") ? "active" : "")"><a href="/Products/Category">Cửa hàng</a></li>
+                    <li class="@((currentController == "Contact") ? "active" : "")"><a href="/Contact">Liên hệ</a></li>
+                </ul>
+            </nav>
+
+            <!-- end header main menu-->
+            <!-- header main cart-->
+        <div class="header__main__cart">
+                        <div class="button_cart" style="margin-right: 30px; ">
+                            <a href="/Cart/Index" class="a_cart"
+                                style="display: flex; position: relative; width: 30px; padding-top: 16px;">
+                                <div class="about__box-icon"><svg xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 28.95 35.07" width="25" height="25">
+                                        <defs>
+                                            <style>
+                                                .cls-1 {
+                                                    fill: none;
+                                                    stroke: #fff;
+                                                    stroke-linecap: round;
+                                                    stroke-linejoin: round;
+                                                    stroke-width: 1.8px;
+                                                }
+                                            </style>
+                                        </defs>
+                                        <g id="Layer_2" data-name="Layer 2">
+                                            <g id="Layer_1-2" data-name="Layer 1">
+                                                <path
+                                                    d="M10,10.54V5.35A4.44,4.44,0,0,1,14.47.9h0a4.45,4.45,0,0,1,4.45,4.45v5.19"
+                                                    class="cls-1"></path>
+                                                <path
+                                                    d="M23.47,34.17h-18A4.58,4.58,0,0,1,.91,29.24L2.5,8.78A1.44,1.44,0,0,1,3.94,7.46H25a1.43,1.43,0,0,1,1.43,1.32L28,29.24A4.57,4.57,0,0,1,23.47,34.17Z"
+                                                    class="cls-1"></path>
+                                            </g>
+                                        </g>
+                                    </svg></div>
+                                <div class="about__box-content">
+                                    <p class="title_cart"
+                                        style="color:#fff; font-size: 13px; font-weight: 600; margin-top: -3px; margin-left: 2px;">
+                                        Giỏ&nbsp;<br>hàng</p> <span id="items_in_cart"
+                                       style="position: absolute; top:21px; left: 8px; font-size: 14px; color:#fff; font-weight: 700;">@Cart.CartQuantity(Context.Session)</span>
+                                </div>
+                            </a>
+
+                        </div>
+                @if (!String.IsNullOrEmpty(Context.Session.GetString("customer_email")))
+                {
+                     str = "main_user";
+                }
+                else
+                {
+                     str = "li_user";
+                }
+                <div style=" position: relative; cursor: pointer; text-align: left; " id="@str">
+                            <div style="  margin-left: 40px; margin-right: 25px; padding-top: 8px;">
+                                <div>
+                                    <div class="about__box-icon"><svg id="icon-smember"
+                                            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 560" width="20">
+                                            <defs>
+                                                <style>
+                                                    #icon-smember .cls-1 {
+                                                        fill: none;
+                                                        stroke: #fff;
+                                                        stroke-width: 30px;
+                                                    }
+                                                </style>
+                                            </defs>
+                                            <circle cx="280" cy="280" r="265" class="cls-1"></circle>
+                                            <circle cx="280" cy="210" r="115" class="cls-1"></circle>
+                                            <path
+                                                d="M86.82,461.4C124.71,354.71,241.91,298.93,348.6,336.82A205,205,0,0,1,473.18,461.4"
+                                                class="cls-1"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+                                 @if (!String.IsNullOrEmpty(Context.Session.GetString("customer_email")))
+                            {
+                                <span
+                                        style="color:#fff; font-size: 13px; font-weight: 600; position: absolute; top:29px; left: 26px;">@Result</span>
+                            }
+                            else
+                            {
+                                <span
+                                    style="color:#fff; font-size: 13px; font-weight: 600; position: absolute; top:28px; left: 18px;">Đăng&nbsp;Nhập</span>
+                            }
+                               
+
+                            </div>
+                            <ul class="vertical-menu hidden" id="submenu_user" style="border-radius: 10px;">
+                                <li style="border-radius: 5px 5px 0 0 ;"><a href="/Account/Detail"><i class="fa-solid fa-circle-user" ></i> Smember</a></li>
+                        <li style="border-radius: 5px 5px 0 0 ;"><a href="/Account/Orders"><i class="fa-solid fa-circle-user"></i> Đơn hàng</a></li>
+                                <li style="border-radius: 0 0 5px 5px;"><a href="/Account/Logout"> <i  class="fa-solid fa-right-from-bracket" ></i>Đăng xuất</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div id="dialog" class="modal">
+                        <div class="modal-content">
+                            <span class="close">&times;</span>
+                            <h2 style="color: #D70018; font-size: 25px;">Smember</h2>
+                            <p
+                                style="font-size: 15px; font-weight: 700; line-height: 20px; text-align: justify; font-family: sans-serif;">
+                                Vui lòng đăng nhập tài khoản Smember để có trải nghiệm mua sắm tốt hơn</p>
+                            <div class="buttons">
+                                <a href="/Account/Login" class="login-btn">Đăng nhập ngay</a>
+                                <a href="/Account/Register" class="register-btn">Đăng ký</a>
+                            </div>
+                        </div>
+                    </div>
+            <!-- end header main cart-->
+            <div class="modal-backdropp" id="backdrop"></div>
+        </div>
+        <!-- end header main-->
+    </div>
+</header>
+<!-- end header -->
+ <script>
+                        const main_user = document.getElementById('main_user');
+                        const subMenu = document.getElementById('submenu_user');
+                        
+                        main_user.addEventListener('click', () => {
+                            subMenu.classList.toggle('hidden');
+                        });
+                    </script>
+
+                    <script>
+                        const liUser = document.getElementById('li_user');
+                        const dialog = document.getElementById('dialog');
+                        const closeBtn = document.querySelector('.close');
+                        const backdrop = document.getElementById('backdrop');
+
+                        liUser.addEventListener('click', () => {
+                            dialog.classList.add('show');
+                            backdrop.style.display = 'block';
+                        });
+
+                        closeBtn.addEventListener('click', () => {
+                            dialog.classList.remove('show');
+                            backdrop.style.display = 'none';
+                        });
+
+                        backdrop.addEventListener('click', () => {
+                            dialog.classList.remove('show');
+                            backdrop.style.display = 'none';
+                        });
+                    </script>
+                      @* <script>
+                        // Lấy tất cả các thẻ li trong menu
+                        const menuItems = document.querySelectorAll('.header__main__menu li');
+
+                        // Lặp qua từng thẻ li để thêm sự kiện click cho chúng
+                        menuItems.forEach((menuItem) => {
+                          menuItem.addEventListener('click', function() {
+                            // Loại bỏ class active khỏi tất cả các thẻ li trong menu
+                            menuItems.forEach((item) => {
+                              item.classList.remove('active');
+                            });
+
+                            // Thêm class active vào thẻ li vừa được click
+                            this.classList.add('active');
+                          });
+                        });
+                      </script>*@

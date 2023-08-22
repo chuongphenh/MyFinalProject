@@ -1,0 +1,189 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutDetail.cshtml";
+}
+
+<style>
+    .img-user {
+        background-color: #F2F2F2;
+        border-radius: 50% 50%;
+        width: 100px;
+        height: 100px;
+        position: absolute;
+        top: -50px;
+        left: 38%;
+    }
+
+        .img-user img {
+            scale: 1.1;
+            position: absolute;
+            top: 18px;
+            left: 1px;
+            max-width: 100%;
+            max-height: 100%;
+            opacity: 0.4;
+        }
+
+    .form-container {
+        height: auto;
+        margin: auto;
+        background-color: #fff;
+        border-radius: 30px;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+        padding: 40px 30px 10px;
+        max-width: 430px;
+        text-align: center;
+        position: relative;
+    }
+
+    .backgroundd {
+        background-image: linear-gradient(to right,#fff,#ed8c8c) !important; /* Replace these colors with your desired gradient */
+        color: transparent !important;
+        width: 100%;
+        height: 800px;
+        z-index: 100000;
+    }
+    
+
+    .error-message {
+        color: #ff7675;
+        line-height: 1.2;
+        font-size: 13px;
+        text-align: left;
+        margin-left: 16px;
+        margin-top: 5px;
+    }
+</style>
+<div class="content-wrapper backgroundd" style="margin-top:50px">
+    <div class="row">
+        <div class="card-body ">
+            @{
+                string strNotify = Context.Request.Query["notify"].ToString();
+                if (!String.IsNullOrEmpty(strNotify))
+                {
+                    <div class="alert alert-danger" style="text-align:center; width:1200px; margin:auto">Tài khoản đã tồn tại, xin mời chọn tài khoản khác!</div>
+                }
+            }
+            <div class="row flex-grow ">
+                <div class="col-lg-4 mx-auto form-container" style="margin-top:30px;">
+                    <div class="img-user">
+                        <img src="~/LayoutAdmin/images/user-removebg-preview.png" />
+                    </div>
+                    <div class="auth-form-light text-left ">
+                        <!--------------------------Thẻ form ----------------->
+                        <form class="pt-3" method="post" action="/Account/RegisterPost/" onsubmit="return validateForm(event)">
+                            <div class="form-group" style="margin-bottom:0.6rem; margin-top:0.7rem;">
+                                <p style="color:#BEBEBE; font-weight:600; font-size:26px; text-align:center" > Đăng ký</p>
+                            </div>
+
+                            <div class="form-group">
+                                <div style="position: relative;">
+                                    <i class="mdi mdi-account" style="position: absolute; left: 17px; top: 50%; transform: translateY(-50%); color:#D0CFCF; font-size:18px;"></i>
+                                    <input style="border-radius: 30px; padding-left: 40px;" type="text" class="form-control form-control-lg" name="UserName" id="UserName" placeholder="Tên đăng nhập" required>
+                                </div>
+                                <p class="error-message" id="userNameError"></p>
+                            </div>
+                            <div class="form-group ">
+                                <div style="position: relative;">
+                                    <i class="mdi mdi-account-card-details" style="position: absolute; left: 17px; top: 50%; transform: translateY(-50%); color:#D0CFCF; font-size:16px;"></i>
+                                    <input style="border-radius: 30px; padding-left: 40px;" type="text" class="form-control form-control-lg" name="FullName" id="FullName" placeholder="Họ và tên" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div style="position: relative;">
+                                    <i class="mdi mdi-home" style="position: absolute; left: 17px; top: 50%; transform: translateY(-50%); color:#D0CFCF; font-size:18px;"></i>
+                                    <input style="border-radius: 30px; padding-left: 40px;" type="text" class="form-control form-control-lg" name="Address" id="Address" placeholder="Địa chỉ" required>
+                                </div>
+                                <p class="error-message" id="addressError"></p>
+                            </div>
+
+                            <div class="form-group">
+                                <div style="position: relative;">
+                                    <i class="mdi mdi-cellphone-iphone" style="position: absolute; left: 17px; top: 50%; transform: translateY(-50%); color:#D0CFCF; font-size:18px;"></i>
+                                    <input style="border-radius: 30px; padding-left: 40px;" type="text" class="form-control form-control-lg" name="Phone" id="Phone" placeholder="Số điện thoại" required>
+                                </div>
+                                <p class="error-message" id="phoneError"></p>
+                            </div>
+
+                            <div class="form-group">
+                                <div style="position: relative;">
+                                    <i class="mdi mdi-lock" style="position: absolute; left: 17px; top: 50%; transform: translateY(-50%); color:#D0CFCF; font-size:18px;"></i>
+                                    <input style="border-radius: 30px; padding-left: 40px;" type="password" class="form-control form-control-lg" name="Password" id="Password" placeholder="Mật khẩu" required>
+                                    <button style="position: absolute; right: 17px; top: 50%; transform: translateY(-50%); color:#D0CFCF; font-size:18px;border:none; background-color:#fff;" type="button" id="togglePassword" class="toggle-password" onclick="togglePasswordVisibility()">
+                                        <i class="mdi mdi-eye"></i>
+                                    </button>
+                                </div>
+                                <p class="error-message" id="passwordError"></p>
+                            </div>
+                            <div class="form-group">
+                                <div style="position: relative;">
+                                    <i class="mdi mdi-lock" style="position: absolute; left: 17px; top: 50%; transform: translateY(-50%); color:#D0CFCF; font-size:18px;"></i>
+                                    <input style="border-radius: 30px; padding-left: 40px;" type="password" class="form-control form-control-lg" name="Password1" id="Password1" placeholder="Mật khẩu xác nhận" required>
+                                    <button style="position: absolute; right: 17px; top: 50%; transform: translateY(-50%); color:#D0CFCF; font-size:18px; border:none; background-color:#fff;" type="button" id="togglePassword1" class="toggle-password" onclick="togglePasswordVisibility1()">
+                                        <i class="mdi mdi-eye"></i>
+                                    </button>
+                                </div>
+                                <p class="error-message" id="confirmPasswordError"></p>
+                            </div>
+                            <div class="form-group">
+                                <button style="border-radius:30px" type="submit" class="btn col-12 btn-lg btn-gradient-danger">Đăng ký</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- page-body-wrapper ends -->
+
+
+@section scripts{
+    <script src="~/js/ValiDate.js"></script>
+    <script>
+        function togglePasswordVisibility() {
+            var passwordInput = document.getElementById("Password");
+            var toggleButton = document.getElementById("togglePassword");
+
+            if (passwordInput.type === "password") {
+                passwordInput.type = "text";
+                toggleButton.innerHTML = '<i class="mdi mdi-eye-off"></i>';
+            } else {
+                passwordInput.type = "password";
+                toggleButton.innerHTML = '<i class="mdi mdi-eye"></i>';
+            }
+        }
+        function togglePasswordVisibility1() {
+            var confirmPasswordInput = document.getElementById("Password1");
+            var toggleButton = document.getElementById("togglePassword1");
+
+            if (confirmPasswordInput.type === "password") {
+                confirmPasswordInput.type = "text";
+                toggleButton.innerHTML = '<i class="mdi mdi-eye-off"></i>';
+            } else {
+                confirmPasswordInput.type = "password";
+                toggleButton.innerHTML = '<i class="mdi mdi-eye"></i>';
+            }
+        }
+        //số điện thoại chỉ được nhập số
+        function allowOnlyNumbers(event) {
+            const charCode = (event.which) ? event.which : event.keyCode;
+            const inputChar = String.fromCharCode(charCode);
+            // Kiểm tra xem ký tự nhập vào có phải là số và độ dài của số điện thoại không vượt quá 10 ký tự
+            return (charCode >= 48 && charCode <= 57) && event.target.value.length < 10;
+        }
+
+        function sanitizeInput() {
+            const phoneInput = document.getElementById('Phone');
+            // Xóa bỏ các ký tự không phải số và đảm bảo độ dài không vượt quá 10 ký tự
+            phoneInput.value = phoneInput.value.replace(/[^0-9]/g, '').slice(0, 10);
+        }
+
+        document.getElementById('Phone').onkeypress = function (event) {
+            return allowOnlyNumbers(event);
+        };
+
+        document.getElementById('Phone').oninput = function () {
+            sanitizeInput();
+        };
+    </script>
+}

@@ -1,0 +1,517 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết sản phẩm</title>
+    <link rel="shortcut icon" type="image/png" href="~/LayoutFrontEnd/images/logoMini.png">
+    <link rel="stylesheet" href="~/LayoutFrontEnd/css/style.css">
+    <link rel="stylesheet" href="~/LayoutFrontEnd/css/reset.css">
+    <link rel="stylesheet" href="~/LayoutFrontEnd/js/script.js">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+
+    <link rel="stylesheet" type="text/css" href="~/LayoutFrontEnd/js/slick-1.8.1/slick/slick.css" />
+    <link rel="stylesheet" type="text/css" href="~/LayoutFrontEnd/js/slick-1.8.1//slick/slick-theme.css" />
+    <!--  -->
+    <link rel="stylesheet" href="~/LayoutFrontEnd/css/bootstrap.min.css" type="text/css">
+    <link rel="stylesheet" href="~/LayoutFrontEnd/css/font-awesome.min.css" type="text/css">
+    <link rel="stylesheet" href="~/LayoutFrontEnd/css/elegant-icons.css" type="text/css">
+    <link rel="stylesheet" href="~/LayoutFrontEnd/css/nice-select.css" type="text/css">
+    <link rel="stylesheet" href="~/LayoutFrontEnd/css/jquery-ui.min.css" type="text/css">
+    <link rel="stylesheet" href="~/LayoutFrontEnd/css/owl.carousel.min.css" type="text/css">
+    <link rel="stylesheet" href="~/LayoutAdmin/vendors/mdi/css/materialdesignicons.min.css">
+    <link rel="stylesheet" href="~/LayoutAdmin/css/style.css">
+</head>
+
+<body style="line-height:2">
+    
+    <style type="text/css">
+        #box {
+            width: 100%;
+            margin: auto;
+        }
+
+            #box > img {
+                width: 100%;
+                height: 80%;
+            }
+
+            #box ul {
+                padding: 0;
+                margin: 0;
+                list-style: none;
+                display: flex;
+            }
+
+                #box ul li {
+                    margin: 6px;
+                }
+                    /* #box ul li:first-child{
+                    margin-left: 0;
+                }
+                #box ul li:last-child{
+                    margin-right: 0;
+                } */
+                    #box ul li img {
+                        cursor: pointer;
+                        width: 100%;
+                    }
+                    a{
+                        text-decoration:none;
+                    }
+    </style>
+    <style>
+      
+        .sub_images_product li {
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .product__details__title {
+            display: flex;
+            border-bottom: 2px solid #f5f5f5;
+            padding-bottom: 8px;
+        }
+
+            .product__details__title h3 {
+                font-size: 24px;
+                font-weight: 700;
+                margin-bottom: 3px;
+            }
+
+        .product__details__title_rating {
+            margin: 0 10px;
+            align-items: center;
+            display: flex;
+            color: gold;
+            font-size: 15px;
+        }
+
+            .product__details__title_rating span {
+                color: #4c4c4c;
+                margin: 0 5px;
+                font-weight: 500;
+            }
+
+        .box-images {
+            width: 100%;
+            border: 1px solid #d1d5db;
+            border-radius: 15px;
+            overflow: hidden;
+            text-align: center;
+            height: 470px;
+        }
+
+            .box-images img {
+                width: 68%;
+                height: 100%;
+            }
+
+        .price__show {
+            margin-right: 15px;
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .price__through {
+            text-decoration: line-through;
+            font-size: 22px;
+            color: #99a2aa;
+            font-weight: 400;
+            line-height: 50px;
+        }
+
+        .tra_gop {
+            width:112px;
+            font-size: 14px;
+            text-align: right;
+            color: #5a5a5a;
+            font-weight: 400;
+        }
+
+        .promotion {
+            border-radius: 15px;
+            border: 1px solid #fee2e2;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .promotion__title {
+            background-color: #fee2e2;
+            font-weight: 700;
+            color: #d70018;
+            padding: 8px;
+            font-size: 20px;
+        }
+
+        .promotion__content {
+            padding: 12px 8px;
+        }
+
+        .promotion__content__item {
+            margin-bottom: 10px;
+        }
+
+        .icon_stt {
+            position: relative;
+        }
+
+            .icon_stt i {
+                color: #d70018;
+                margin-right: 5px;
+                font-size: 16px;
+            }
+
+        .icon_stt_number {
+            position: absolute;
+            top: 1px;
+            left: 4px;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .icon__text {
+            color: #0a0a0a;
+            font-weight: 400;
+        }
+
+        /* ưu đãi thêm */
+        .extra__promotion {
+            border-radius: 15px;
+            border: 1px solid #d1d5db;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .extra__promotion_title {
+            background-color: #d1d5db;
+            font-weight: 700;
+            color: #0a0a0a;
+            padding: 10px;
+            font-size: 14px;
+        }
+
+        .extra__promotion_content {
+            padding: 12px 8px;
+        }
+
+        .extra__promotion_content__item {
+            margin-bottom: 10px;
+        }
+
+        .icon_tich_xanh img {
+            width: 18px;
+            margin-right: 8px;
+        }
+
+        .item_text img {
+            width: 70px;
+            height: 16px;
+            margin-top: -6px;
+        }
+
+        .item_text {
+            font-size: 14px;
+        }
+
+        .card--buy-now {
+        }
+
+        .buy--now {
+            color: white;
+            background-color: #d70018;
+            border-radius: 10px;
+            text-align: center;
+            width: 80%;
+            display: inline-block;
+            padding: 8px;
+            color: #fff;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+
+            .buy--now:hover {
+                background-color: #f92e2e;
+                color: #fff;
+                border: 1px solid #d70018;
+                transition: all 0.5s;
+            }
+
+        .buy--add {
+            width: 10%;
+        }
+
+            .buy--add div {
+                width: 79px;
+                font-size: 30px;
+                height: 100%;
+                border-radius: 10px;
+                background-color: #fff;
+                color: #d70018;
+                border: 2px solid #d70018;
+                align-items: center;
+                text-align: center;
+            }
+
+            .buy--add:hover div {
+                scale: 1.04;
+                transition: all 0.5s;
+            }
+
+        .btn--traGop {
+            margin-right: 10px;
+        }
+
+        .btn--traGop, .btn--Mastercard {
+            width: 50%;
+            background-color: #3479d7;
+            border-radius: 10px;
+            color: #fff;
+            display: inline-block;
+            padding: 8px;
+            font-size: 15px;
+        }
+
+            .btn--traGop:hover, .btn--Mastercard:hover {
+                background-color: #02429b;
+                color: #fff;
+            }
+
+        .banner__detail img {
+            width: 100%;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        .information__content_item {
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+            .information__content_item img {
+                width: 16px;
+                height: 22px;
+                margin-right: 20px;
+            }
+
+        .product__details__information {
+            border: 1px solid #d1d5db;
+            border-radius: 10px;
+            padding: 10px 10px 0;
+        }
+
+        .product__details__information__title {
+            font-weight: 600;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .main--information, .sidebar--information {
+            box-shadow: -1px 2px 10px 1px #d4d4d4;
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        .main--information img{
+            width:100%;
+            }
+
+        .main--information-top{
+            background-color:#eeeeee;
+            padding:15px 5px 5px;
+            font-size:15px;
+            color:#4a4a4a;
+            border-radius:10px;
+        }
+        .main--information-top h2{
+            font-size:21px;
+            text-align:center;
+            text-transform: uppercase;
+            color: #d70018;
+            margin-bottom:0px;
+        }
+
+        .main--information-top ul li::before {
+            content: "• ";
+        }
+
+        .main--information-bottom{
+            padding-top: 15px;
+            font-size:15px;
+        } 
+        .main--information-bottom h2{
+            font-size:21px;
+        }
+        .main--information-bottom h3{
+            font-size:17px;
+        }
+
+        .main--information-bottom p a {
+                color: #d70018;
+                font-weight:400;
+        }
+
+        .sidebar--information-title {
+            font-weight: 700;
+            font-size: 17px;
+            margin-bottom: 15px;
+        }
+
+        .item--news-sp {
+            display: flex;
+            height: 65px;
+            margin-bottom:10px;
+            color: #4b4b4b;
+            transition: all 0.5s;
+        }
+         .item--news-sp:hover{
+             scale: 1.03;
+             transition:all 0.5s;
+                color: #d70018;
+            }
+           
+
+        .item--news-img {
+            width: 35%;
+            padding-right: 10px;
+            overflow:hidden;
+        }
+
+            .item--news-img img {
+                width: 100%;
+                border-radius: 10px;
+                height: 64px;
+                overflow: hidden;
+            }
+
+        .item--news-text {
+            width: 65%;
+            font-size: 14px;
+            height: 60px;
+            overflow: hidden;
+        }
+
+        .item--news-button {
+            color: #4b4b4b;
+            margin-top: 8px;
+            box-shadow: -1px 1px 10px 1px #d4d4d4;
+            height: 35px;
+            border-radius: 10px;
+            width: 100%;
+            text-align: center;
+            line-height: 32px;
+            position: relative;
+            font-size:15px;
+        }
+
+            .item--news-button:hover {
+                border: 1px solid #d70018;
+                background-color: #fde5e5;
+                color: #d91e18;
+            }
+
+
+        .main--information {
+            max-height: 550px;
+            overflow: hidden;
+            transition: max-height 0.3s ease-in-out;
+        }
+
+        .button--extend {
+            background: linear-gradient(180deg, hsla(0, 0%, 100%, 0), hsla(0, 0%, 100%, .91) 50%, #fff 55%);
+            border-radius: 10px;
+            bottom: 0;
+            display: block;
+            left: 25px;
+            margin-bottom: 0;
+            padding-top: 50px;
+            position: absolute;
+            right: 0;
+            text-align: center;
+            width: 94%;
+        }
+
+        #toggleButton {
+            text-align: center;
+            margin-left: 50px;
+            align-items: center;
+            background: #fff;
+            border: none;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 1px 2px 0 rgba(60, 64, 67, .1), 0 2px 6px 2px rgba(60, 64, 67, .15);
+            color: #212529;
+            cursor: pointer;
+            display: flex;
+            font-size: 14px;
+            height: 34px;
+            justify-content: center;
+            margin-bottom: 15px;
+            margin-left: auto;
+            margin-right: auto;
+            max-width: 335px;
+            -webkit-text-decoration: none;
+            text-decoration: none;
+            width: 100%;
+        }
+
+            #toggleButton:hover {
+                border: 1px solid #d70018;
+                background-color: #fde5e5;
+                color: #d91e18;
+            }
+    </style>
+    <div class="wrapper">
+        <!-- header begin -->
+        @await Html.PartialAsync("_PartialHeader");
+
+        <!-- end header -->
+
+        @RenderBody()
+        <!-- footer begin -->
+        @await Html.PartialAsync("_PartialFooter");
+
+        <!-- Footer End -->
+        </div>
+    <script src="~/LayoutAdmin/js/off-canvas.js"></script>
+    <script src="~/LayoutAdmin/js/hoverable-collapse.js"></script>
+    <script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script type="text/javascript" src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+    <script type="text/javascript" src="~/LayoutFrontEnd/js/slick-1.8.1/slick/slick.min.js"></script>
+
+        <script type="text/javascript">
+            function changeImage(imgId) {
+                // reset đường viền
+                document.getElementById("img1").removeAttribute("style");
+                document.getElementById("img2").removeAttribute("style");
+                document.getElementById("img3").removeAttribute("style");
+                document.getElementById("img4").removeAttribute("style");
+                document.getElementById("img5").removeAttribute("style");
+                // document.getElementById("img6").removeAttribute("style");
+                //set đường viền
+                document.getElementById(imgId).setAttribute("style", "border: 2px solid red;");
+
+                //lấy giá trị thuộc tính src của id= imgId
+                var image_src = document.getElementById(imgId).getAttribute("src");
+                document.getElementById("show-image").setAttribute("src", image_src);
+            }
+
+        $('.autoplay').slick({
+            infinite: false,
+            arrows: true,
+            slidesToShow: 5,
+            slidesToScroll: 1,
+            autoplay: true,
+            adaptiveHeight: true,
+            autoplaySpeed: 2000,
+        });
+
+        </script>
+    @RenderSection("scripts", required: false)
+</body>
+
+</html>

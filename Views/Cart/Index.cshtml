@@ -1,0 +1,202 @@
+﻿@{
+    //import file Layout1.cshtml vao day
+    Layout = null;
+
+    List<Item> cart= Model as List<Item> ?? new List<Item>();
+    //List<Item> cart = Cart.GetCart(Context.Session) ?? new List<Item>();
+}
+@using MyFinalProject.Models
+@*<div class="container">
+    @if (cart != null)
+    {
+        <div class=" main-content-area" style="margin-top:15px; min-height: 700px;">
+            <form method="post" action="/Cart/Update" id="frm-cart">
+                <div class="wrap-iten-in-cart">
+                    <h3 class="box-title">Shopping cart</h3>
+                    <ul class="products-cart">
+                        <li class="pr-cart-item">
+                            <div class="product-image"></div>
+                            <div class="product-name">
+                                <p class="Total price" style="font-weight: bold; font-size:14px;">Name</p>
+                            </div>
+                            <div class="price-field produtc-price"><p class="price">price</p></div>
+                            <div class="quantity">
+                                <p class="Total price" style="font-weight:bold; font-size:14px;">Quantity</p>
+                            </div>
+                            <div class="price-field sub-total"><p class="Total price">Total price</p></div>
+                            <div>
+                            </div>
+                        </li>
+                        @foreach (Item item_cart in Model)
+                        {
+                            <li class="pr-cart-item">
+                                <div class="product-image">
+                                    <figure><img src="~/Upload/Products/@item_cart.ProductRecord.PhotoProduct" alt=""></figure>
+                                </div>
+                                <div class="product-name">
+                                    <a class="link-to-product" href="/Products/Detail/@item_cart.ProductRecord.IdProduct">@item_cart.ProductRecord.NameProduct</a>
+                                </div>
+                                <div class="price-field produtc-price"><p class="price">$@item_cart.ProductRecord.PriceProduct</p></div>
+                                <div class="quantity">
+                                    <div class="">
+                                        <input type="number" name="product_@item_cart.ProductRecord.IdProduct" value="@item_cart.Quantity" data-max="120" pattern="[0-9]*" style="line-height:30px; width:50px; border:1px solid #dddddd;">
+                                    </div>
+                                </div>
+                                <div class="price-field sub-total"><p class="price">
+                                        @string.Format("{0:#,0}", (item_cart.Quantity*item_cart.ProductRecord.PriceProduct))₫
+
+                                </p></div>
+                                <div style="position:relative;">
+                                    <a href="/Cart/Remove/@item_cart.ProductRecord.IdProduct" class="btn btn-delete" title="Remove" style="position:absolute; top:5px; left:-25px;">
+                                        <i class="fa fa-times-circle" aria-hidden="true"></i>
+                                    </a>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+
+                <div class="summary">
+                    <div class="order-summary col-lg-4">
+                        <h4 class="title-box">Order Summary</h4>
+                        <p class="summary-info total-info "><span class="title">Total</span><b class="index"> @string.Format("{0:#,0}", Cart.CartTotal(Context.Session))₫</b></p>
+                    </div>
+                    <div class="checkout-info col-lg-4">
+                        <a class="btn btn-checkout" href="/Cart/CheckOut">Check out</a>
+                        <a class="link-to-shop" href="/Home">Continue Shopping<i class="fa fa-arrow-circle-right" aria-hidden="true"></i></a>
+                    </div>
+                    <div class="update-clear col-lg-4">
+                        <a class="btn btn-clear" href="/Cart/Destroy">Clear Shopping Cart</a>
+                        <a class="btn btn-update" href="#" onclick="document.getElementById('frm-cart').submit();">Update Shopping Cart</a>
+                    </div>
+                </div>
+            </form>
+
+
+        </div>
+
+        <!--end main content area-->
+    }
+</div><!--end container-->*@
+<style>
+    cart__main__top__title a:hover{
+        text-decoration:underline;
+    }
+</style>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giỏ hàng</title>
+    <link rel="shortcut icon" type="image/png" href="~/LayoutFrontEnd/images/logoMini.png">
+    <link rel="stylesheet" href="~/LayoutFrontEnd/css/style.css">
+    <link rel="stylesheet" href="~/LayoutFrontEnd/css/reset.css">
+    <link rel="stylesheet" href="~/LayoutFrontEnd/js/script.js">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!--  -->
+    <link rel="stylesheet" href="~/LayoutFrontEnd/css/font-awesome.min.css" type="text/css">
+    <link rel="stylesheet" href="~/LayoutFrontEnd/css/elegant-icons.css" type="text/css">
+    <link rel="stylesheet" href="~/LayoutFrontEnd/css/nice-select.css" type="text/css">
+    <link rel="stylesheet" href="~/LayoutFrontEnd/css/jquery-ui.min.css" type="text/css">
+    <link rel="stylesheet" href="~/LayoutFrontEnd/css/owl.carousel.min.css" type="text/css">
+</head>
+<body>
+    <div class="wrapper">
+        <!-- header begin -->
+        @await Html.PartialAsync("_PartialHeader");
+        <!-- end header -->
+
+        <div class="cart__main container--670px">
+            <div class="cart__main__top">
+                <div class="cart__main__top__title">
+                    <a href="/Home"><i class="fa fa-chevron-left"></i> Trở về</a>
+                    <p>Giỏ hàng</p>
+                </div>
+                @if (cart != null)
+                {
+                    @foreach (Item item_cart in cart)
+                    {
+                        <!-- item1 -->
+                        <div class="cart__main__top__item">
+                            <div class="cart__main__top__item__img">
+                                <img src="~/Upload/Products/@item_cart.ProductRecord.PhotoProduct" alt="">
+                                <div class="product-line"></div>
+                            </div>
+                            <div class="cart__main__top__item__info">
+                                <!-- name -->
+                                <div class="product--info-name height--30px">
+                                    <a href="/Products/Detail/@item_cart.ProductRecord.IdProduct">@item_cart.ProductRecord.NameProduct</a>
+                                </div>
+                                <!-- /name -->
+                                <!-- price -->
+                                <div class="product--info-price">
+                                    <p class="product__price--show">
+                                        @string.Format("{0:#,0}", (item_cart.Quantity*item_cart.ProductRecord.PriceProduct* (100 - item_cart.ProductRecord.DiscountProduct) /100)).Replace(",", ".")<span class="nghin_dong">₫</span>
+                                    </p>
+                                    <p class="product__price--through">
+                                        @string.Format("{0:#,0}", (item_cart.Quantity*item_cart.ProductRecord.PriceProduct)).Replace(",", ".")<span class="nghin_dong">₫</span>
+                                    </p>
+                                </div>
+
+                                <!-- /price -->
+                            </div>
+                            <!-- info -->
+                            <a style=" z-index:10" href="/Cart/Remove/@item_cart.ProductRecord.IdProduct" class="cart__main__top__item_btn--delete">
+                                <i class="fa fa-trash-alt"></i> 
+                            </a>
+                            <div class="cart__main__top__item_change-quantity">
+                                <span class="button__minus" id="button-minus">-</span>
+                                <input type="text" name="product_@item_cart.ProductRecord.IdProduct" value="@item_cart.Quantity" data-max="10" pattern="[0-9]*" id="input-quantity" onchange="LuuSoLuong('@item_cart.ProductRecord.IdProduct')">
+                                <span class="button__plus" id="button-plus">+</span>
+                            </div>
+                        </div>
+                        <!-- item1 end -->
+                    }
+                }
+
+                    </div>
+                <!--Tiếp tục đặt hàng-->
+                    <div class="cart__main__bottom container--670px">
+                        <div class="tieu_de_tong_tien">
+                            <p>Tổng tiền tạm tính:</p>
+                    <p class="total-price">@string.Format("{0:#,0}", Cart.CartTotal(Context.Session)).Replace(",", ".") <span class="nghin_dong">₫</span></p>
+                        </div>
+                        <ul>
+                    <li class="tien_hanh_dat_hang"> <a href="/Cart/CheckOut">Tiến hành đặt hàng </a> </li>
+                    <li class="chon_them"> <a href="/Home"> Chọn thêm sản phẩm khác</a> </li>
+                        </ul>
+
+                    </div>
+                    </div>
+                
+    </div>
+        <script type="text/javascript">
+            document.addEventListener('DOMContentLoaded', function () {
+                const minusButton = document.getElementById('button-minus');
+                const plusButton = document.getElementById('button-plus');
+                const quantityInput = document.getElementById('input-quantity');
+
+                const maxValue = parseInt(quantityInput.getAttribute('data-max'));
+
+                minusButton.addEventListener('click', () => {
+                    let currentValue = parseInt(quantityInput.value);
+                    if (currentValue > 1) {
+                        quantityInput.value = currentValue - 1;
+                    }
+                });
+
+                plusButton.addEventListener('click', () => {
+                    let currentValue = parseInt(quantityInput.value);
+                    if (currentValue < maxValue) {
+                        quantityInput.value = currentValue + 1;
+                    }
+                });
+            });
+
+
+        </script>
+    
+
+</body>
+</html>

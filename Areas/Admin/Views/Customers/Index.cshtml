@@ -1,0 +1,112 @@
+﻿@* nhận diện các file trong thư mục Models*@
+@using MyFinalProject.Models
+@*Khai báo kiểu dữ liệu của Model (có cũng được không có cũng được)*@
+@model X.PagedList.IPagedList<Customer>
+@*Đối tượng để gọi hàm hiện thị phân trang*@
+@using X.PagedList.Mvc.Core
+@{
+    //import file layout.cshtml vào đây
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+
+<div class="col-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <div class="d-flex justify-content-between" style="margin-bottom:20px;">
+                <div class="gradient-text text-uppercase" style="font-size:28px; font-weight:600; padding:0; letter-spacing:2px;">Danh sách khách hàng</div>
+                <a href="/Admin/Customers/Create" type="button" class="btn btn-sm btn-outline-success btn-fw">Thêm tài khoản mới</a>
+            </div>
+            <table class="table table-bordered text-center">
+                <thead class="table-light text-center">
+                    <tr>
+                        <th style="font-size:15px!important; font-weight:400; width:10px;">STT</t>
+                        <th style="font-size:15px!important; font-weight:400">Tên đăng nhập</th>
+                        <th style="font-size:15px!important; font-weight:400">Tên khách hàng</th>
+                        <th style="font-size:15px!important; font-weight:400">Địa chỉ</th>
+                        <th style="font-size:15px!important; font-weight:400">Số điện thoại</th>
+                        <th style="font-size:15px!important; font-weight:400">Trạng thái</th>
+                        <th style="font-size:15px!important; font-weight:400">Ngày tạo</th>
+                        <th style="font-size:15px!important; font-weight:400">Chức năng</th>
+                    </tr>
+                </thead>
+                <tbody class="table-success">
+                    @foreach (var (index, item) in Model.Select((value, i) => ((Model.PageNumber - 1) * Model.PageSize + i + 1, value)))
+                    {
+                        <tr>
+                            <td>@index</td>
+                            <td>@item.EmailCustomer</td>
+                            <td>@item.NameCustomer</td>
+                            <td>@item.AddressCustomer</td>
+                            <td>@item.PhoneCustomer</td>
+                            <td>
+                                @if (item.StatusUser == true)
+                                {
+                                    <text>
+                                        <div class="form-check form-check-success">
+                                            <label class="form-check-label" style="padding-left: -0.2rem">
+                                                <input type="checkbox" class="form-check-input" checked="" onchange="SaveStatus('@item.IdCustomer')"> Đang hoạt động <i class="input-helper"></i>
+                                            </label>
+                                        </div>
+                                    </text>
+                                }
+                                else
+                                {
+                                    <text>
+                                        <div class="form-check form-check-danger">
+                                            <label class="form-check-label" style="padding-left: -0.2rem;">
+                                                <input type="checkbox" class="form-check-input" checked="" onchange="SaveStatus('@item.IdCustomer')"> Đang bị khoá <i class="input-helper"></i>
+                                            </label>
+                                        </div>
+                                    </text>
+                                }
+                            </td>
+                            <td>@String.Format("{0:dd/MM/yyyy}", item.DateCreated)</td>
+                            <td style="text-align:center;">
+                                <a href="/Admin/Customers/Update/@item.IdCustomer" class="btn btn-sm btn-outline-primary btn-fw">Sửa</a>&nbsp;
+                                <a href="/Admin/Customers/Delete/@item.IdCustomer" onclick="return window.confirm('Are you sure?');" class="btn btn-sm btn-outline-danger btn-fw">Xoá</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            @Html.PagedListPager(Model,page => Url.Action("Index", new {page=page}) )
+        </div>
+    </div>
+</div>
+<style>
+    .btn.btn-fw {
+        min-width: 78px !important;
+    }
+
+    .gradient-text {
+        font-size: 56px;
+        background-image: linear-gradient(to right,#87CEEB,#2E8B57); /* Replace these colors with your desired gradient */
+        -webkit-background-clip: text; /* For Safari */
+        background-clip: text;
+        color: transparent;
+        text-align: center;
+    }
+
+</style>
+
+@section scripts{
+    <script type="text/javascript">
+        function SaveStatus(IdCustomer) {
+            //location.href = "/Admin/Users/Decentralization?Id_user=" + Id_user + "&Id_per=" + Id_per;
+            var jsonData = {
+                IdCustomer: IdCustomer
+            }
+            $.ajax({
+                url: '/Admin/Customers/SaveStatus',
+                type: 'post',
+                data: jsonData,
+                dataType: 'JSON',
+                success: function (data) {
+                    alert(data.status);
+                    location.reload();
+                }
+            })
+        }
+    </script>
+}

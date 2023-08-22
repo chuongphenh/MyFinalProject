@@ -1,0 +1,145 @@
+﻿@{
+    //import file Layout.cshtml vao day
+    Layout = "~/Views/Shared/_LayoutDetail.cshtml";
+}
+@*nhan dien cac file trong thu muc Models*@
+@using MyFinalProject.Models
+@using X.PagedList;
+@*khai bao kieu du lieu cua Model*@
+@model X.PagedList.IPagedList<Product>
+@*doi tuong de goi ham hien thi phan trang*@
+
+@using X.PagedList.Mvc.Core;
+@functions {
+    FinalDotnetProjectContext db = new FinalDotnetProjectContext();
+
+    //liệt kê các tag thông số của sản phẩm
+    public List<Tag> GetTagsTS(int _ProductId)
+    {
+        List<Tag> list_record = (from item_tag in db.Tags join item_tag_product in db.TagProducts on item_tag.IdTag equals item_tag_product.IdTag join item_product in db.Products on item_tag_product.IdProduct equals item_product.IdProduct where item_product.IdProduct == _ProductId && item_tag.TypeTag == "Thông số" select item_tag).ToList();
+        return list_record;
+    }
+    //liệt kê các tag khuyến của sản phẩm chỉ lấy 1 tag
+    public string GetTagsKM(int _ProductId)
+    {
+        var record = (from item_tag in db.Tags join item_tag_product in db.TagProducts on item_tag.IdTag equals item_tag_product.IdTag join item_product in db.Products on item_tag_product.IdProduct equals item_product.IdProduct where item_product.IdProduct == _ProductId && item_tag.TypeTag == "Khuyến mại" select item_tag.NameTag).FirstOrDefault();
+        return record;
+    }
+}
+
+
+<div style="margin-top: 110px; line-height:1.5 !important" class="single__product__main">
+    <!-- Product Details Section Begin -->
+    <div class="container" style="width:1200px; margin:auto;">
+        <div class="row">
+            @foreach (var item in Model)
+            {
+                var price_sale = item.PriceProduct * (100 - item.DiscountProduct) / 100.0;
+                <!--product-->
+                <div class="col-lg-3">
+                    <!-- product 1 -->
+                    <div class="featured__product__slider__item product--info-container">
+                        <!-- product info -->
+                        <div class="product--info">
+                            <a href="/Products/Detail/@item.IdProduct">
+                                <!-- img -->
+                                <div class="product--info-image">
+                                    <img style=" width: 100%;
+            height: 100%; margin:auto;" src="~/Upload/Products/@item.PhotoProduct" alt="@item.NameProduct">
+                                </div>
+                                <div class="product--tag-tt" style="height:18px">
+                                    @{
+                                        var list_tag_sp = GetTagsTS(item.IdProduct);
+                                    }
+                                    @foreach (var item_tag in list_tag_sp)
+                                    {
+                                        <div>@item_tag.NameTag</div>
+                                    }
+
+                                </div>
+                                <!-- /img -->
+                                <!-- name -->
+                                <div class="product--info-name" style="z-index:1 !important;">
+                                    <p style="z-index:1 !important; font-size:16px">@item.NameProduct</p>
+                                </div>
+                                <!-- /name -->
+                                <!-- price -->
+                                <div class="product--info-price">
+                                    <p class="product__price--show" style="font-size:18px; ">
+                                        @string.Format("{0:#,0}", price_sale).Replace(",", ".")<span class="nghin_dong">₫</span>
+                                    </p>
+                                    <p class="product__price--through" style="font-size:16px;">
+                                        @string.Format("{0:#,0}", @item.PriceProduct).Replace(",", ".")<span class="nghin_dong">₫</span>
+                                    </p>
+                                </div>
+
+                                <!-- /price -->
+                                <div class="product__price--percent">
+                                    <p class="product__price--percent-detail">
+                                        Giảm&nbsp;@item.DiscountProduct%
+                                    </p>
+                                </div>
+                            </a>
+                        </div>
+                        @{
+                            var tag_km = GetTagsKM(item.IdProduct);
+                        }
+                        @if (!String.IsNullOrEmpty(tag_km))
+                        {
+                            <div class="product--tag-km">
+                                @tag_km
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="product--tag-km" style="background-color:#fff; border:none;">
+                            </div>
+                        }
+
+                        <div class="rating" data-default-rating="0">
+                            <a href="/Products/Rating/@item.IdProduct?star=1" class="star-link" data-product-id="@item.IdProduct">
+                                <span class="star star1 "
+                                      data-rating="1"><i class="fa fa-star"></i></span>
+                            </a>
+                            <a href="/Products/Rating/@item.IdProduct?star=2" class="star-link" data-product-id="@item.IdProduct">
+                                <span class="star star2 "
+                                      data-rating="2"><i class="fa fa-star"></i></span>
+                            </a>
+                            <a href="/Products/Rating/@item.IdProduct?star=3" class="star-link" data-product-id="@item.IdProduct">
+                                <span class="star star3 "
+                                      data-rating="3"><i class="fa fa-star"></i></span>
+                            </a>
+                            <a href="/Products/Rating/@item.IdProduct?star=4" class="star-link" data-product-id="@item.IdProduct">
+                                <span class="star star4 "
+                                      data-rating="4"><i class="fa fa-star"></i></span>
+                            </a>
+                            <a href="/Products/Rating/@item.IdProduct?star=5" class="star-link" data-product-id="@item.IdProduct">
+                                <span class="star star5 "
+                                      data-rating="5"><i class="fa fa-star"></i></span>
+                            </a>
+                        </div>
+                        <!-- /product info -->
+                        <div class="product--button">
+                            <a href="/Cart/Buy/@item.IdProduct"><i class="fa-solid fa-cart-plus  margin--right-5px"></i>Thêm vào giỏ hàng</a>
+                        </div>
+                    </div>
+                </div>
+                <!--end product-->
+            }
+
+        </div>
+        <div>
+            @{
+                // Lấy tham số "order" từ ViewBag
+                string currentOrder = ViewBag.CurrentOrder;
+            }
+
+            @Html.PagedListPager(Model, page => Url.Action("Category", new { id = ViewBag.CategoryId, page = page, order = currentOrder }))
+
+
+        </div>
+
+    </div>
+
+
+</div>

@@ -1,0 +1,570 @@
+﻿@{
+    Layout = "~/Views/Shared/_LayoutHome.cshtml";
+}
+@using MyFinalProject.Models
+@using MyFinalProject.MyClass
+@functions {
+    public FinalDotnetProjectContext db = new FinalDotnetProjectContext();
+    //san pham giam gia -> Discount > 0 (table Products)
+    public List<Product> DisCountProducts()
+    {
+        //List<Product> list_record = db.Products.Where(item => item.DiscountProduct > 0).Skip(0).Take(8).OrderByDescending(item => item.IdProduct).ToList(); 
+        List<Product> list_record = db.Products.Where(item => item.DiscountProduct >= 18 & item.DiscountProduct<29).Skip(0).Take(8).OrderBy(item => item.IdProduct).ToList();
+        return list_record;
+    }
+    //Liệt kê các danh sách của sản phẩm giảm giá, san pham giam gia -> Discount > 0 (table Products)
+    public List<Category> GetCategoriesDiscount()
+    {
+        List<Category> list_record = (from item_category in db.Categories join item_category_product in db.CategoryProducts on item_category.IdCategory equals item_category_product.IdCategory join item_product in db.Products on item_category_product.IdProduct equals item_product.IdProduct where item_product.DiscountProduct >= 18 && item_product.DiscountProduct <= 29 && item_category.IdParent == 0 select item_category).Distinct().Skip(0).Take(2).ToList();
+        return list_record;
+    }
+
+
+    //san pham noi bat -> Hot = 1 (table Products)
+    public List<Product> HotProducts()
+    {
+        List<Product> list_record = db.Products.Where(item => item.HotProduct == 1).Skip(0).Take(8).OrderByDescending(item => item.IdProduct).ToList();
+        return list_record;
+    }
+
+    //Liệt kê các danh sách của sản phẩm nổi bật, san pham noi bat -> Hot = 1 (table Products)
+    public List<Category> GetCategoriesHot()
+    {
+        List<Category> list_record = (from item_category in db.Categories join item_category_product in db.CategoryProducts on item_category.IdCategory equals item_category_product.IdCategory join item_product in db.Products on item_category_product.IdProduct equals item_product.IdProduct where item_product.HotProduct == 1 && item_category.IdParent == 0 select item_category).Skip(0).Distinct().Take(4).ToList();
+        return list_record;
+    }
+
+
+    //liet ke cac danh muc hien thi o trang chut -> DisplayHomePage = 1 (table Products)
+    public List<Category> Categories()
+    {
+        List<Category> list_record = db.Categories.Where(item => item.DisplayHomePage == 1).OrderBy(item => item.IdCategory).ToList();
+        return list_record;
+    }
+    //lay cac danh muc con tuong ung voi danh muc cha
+    public List<Category> SubCategories(int _CategoryId)
+    {
+        List<Category> list_record = db.Categories.Where(item => item.IdParent == _CategoryId).OrderByDescending(item => item.IdCategory).ToList();
+        return list_record;
+    }
+    //Moi danh muc liet ke 8 san pham moi nhat
+    public List<Product> Products(int _CategoryId)
+    {
+        List<Product> list_record = (from item_category in db.Categories join item_category_product in db.CategoryProducts on item_category.IdCategory equals item_category_product.IdCategory join item_product in db.Products on item_category_product.IdProduct equals item_product.IdProduct where item_category.IdCategory == _CategoryId select item_product).Skip(0).Take(8).ToList();
+        //.Skip(0).Take(8) => từ bản ghi đầu tiên (skip(0)) lấy 8 bản ghi (take(8))
+        return list_record;
+    }
+    //tin tuc noi bat -> Hot = 1 (table Products)
+    public List<News> HotNews()
+    {
+        List<News> list_record = db.News.Where(item => item.HotNews == 1).OrderByDescending(item => item.IdNews).Skip(0).Take(4).ToList();
+        return list_record;
+    }
+    //liệt kê các tag thông số của sản phẩm
+    public List<Tag> GetTagsTS(int _ProductId)
+    {
+        List<Tag> list_record = (from item_tag in db.Tags join item_tag_product in db.TagProducts on item_tag.IdTag equals item_tag_product.IdTag join item_product in db.Products on item_tag_product.IdProduct equals item_product.IdProduct where item_product.IdProduct == _ProductId && item_tag.TypeTag == "Thông số" select item_tag).ToList();
+        return list_record;
+    }
+    //liệt kê các tag khuyến của sản phẩm chỉ lấy 1 tag
+    public string GetTagsKM(int _ProductId)
+    {
+        var record = (from item_tag in db.Tags join item_tag_product in db.TagProducts on item_tag.IdTag equals item_tag_product.IdTag join item_product in db.Products on item_tag_product.IdProduct equals item_product.IdProduct where item_product.IdProduct == _ProductId && item_tag.TypeTag == "Khuyến mại" select item_tag.NameTag).FirstOrDefault();
+        return record;
+    }
+}
+
+
+
+<!-- Hot Sale Begin -->
+<div class="hot-sale container">
+    <!-- title -->
+    <div class="hot-sale__title">
+        <!-- menu -->
+        <div class="hot-sale__title__menu">
+            <ul>
+                @{
+                    var list_categories_discount = GetCategoriesDiscount();
+                }
+                @foreach(var item in list_categories_discount)
+                {
+                    <li><a href="/Products/Category/@item.IdCategory">@item.NameCategory</a></li>
+                }
+                
+                
+            </ul>
+        </div>
+        <!-- /menu -->
+        <!-- img -->
+        <div class="hot-sale__title__img">
+            <img src="~/LayoutFrontEnd/images/FLASH-SALE-TITLE.png" alt="">
+        </div>
+        <!-- /img -->
+        <!-- countdown -->
+        <div class="hot-sale__title__countdown">
+            <div id="countdown">
+                <div id="timer">
+                    Kết thúc sau :
+                    <span id="days"></span> :
+                    <span id="hours"></span> :
+                    <span id="minutes"></span> :
+                    <span id="seconds"></span>
+                </div>
+            </div>
+        </div>
+        <!-- /countdown -->
+    </div>
+    <!-- /title -->
+    <!-- content -->
+    <div class="hot-sale__content product-sale autoplay">
+        @{
+            //san pham giam gia
+            var discount_products = DisCountProducts();
+            
+        }
+        @foreach (var item in discount_products)
+        {
+            var price_sale = (item.PriceProduct * (100 - item.DiscountProduct) / 100.0);
+            <!-- product 1 -->
+            <div class="featured__product__slider__item product--info-container">
+                <!-- product info -->
+                <div class="product--info">
+                    <a href="/Products/Detail/@item.IdProduct">
+                        <!-- img -->
+                        <div class="product--info-image">
+                            <img src="~/Upload/Products/@item.PhotoProduct" alt="@item.NameProduct">
+                        </div>
+                        @*  <div class="product--tag-tt" >
+                    @{
+                    var list_tag_sp = GetTagsTS(item.IdProduct);
+                    }
+                    @foreach (var item_tag in list_tag_sp)
+                    {
+                    <div>@item_tag.NameTag</div>
+                    }
+
+                    </div>*@
+                        <!-- /img -->
+                        <!-- name -->
+                        <div class="product--info-name">
+                            <p>@item.NameProduct</p>
+                        </div>
+                        <!-- /name -->
+                        <!-- price -->
+                        <div class="product--info-price">
+                            <p class="product__price--show">
+                                @string.Format("{0:#,0}", price_sale).Replace(",", ".")<span class="nghin_dong">₫</span>
+                            </p>
+                            <p class="product__price--through">
+                                @string.Format("{0:#,0}", @item.PriceProduct).Replace(",", ".")<span class="nghin_dong">₫</span>
+                            </p>
+                        </div>
+
+                        <!-- /price -->
+                        <div class="product__price--percent">
+                            <p class="product__price--percent-detail">
+                                Giảm&nbsp;@item.DiscountProduct%
+                            </p>
+                        </div>
+                    </a>
+                </div>
+                @{
+                    var tag_km = GetTagsKM(item.IdProduct);
+                }
+                @if (!String.IsNullOrEmpty(tag_km))
+                {
+                    <div class="product--tag-km">
+                        @tag_km
+                    </div>
+                }
+                else
+                {
+                    <div class="product--tag-km" style="background-color:#fff; border:none;">
+                    </div>
+                }
+
+                <div class="rating" data-default-rating="0">
+                    <a href="/Products/Rating/@item.IdProduct?star=1" class="star-link" data-product-id="@item.IdProduct">
+                        <span class="star star1 "
+                              data-rating="1"><i class="fa fa-star"></i></span>
+                    </a>
+                    <a href="/Products/Rating/@item.IdProduct?star=2" class="star-link" data-product-id="@item.IdProduct">
+                        <span class="star star2 "
+                              data-rating="2"><i class="fa fa-star"></i></span>
+                    </a>
+                    <a href="/Products/Rating/@item.IdProduct?star=3" class="star-link" data-product-id="@item.IdProduct">
+                        <span class="star star3 "
+                              data-rating="3"><i class="fa fa-star"></i></span>
+                    </a>
+                    <a href="/Products/Rating/@item.IdProduct?star=4" class="star-link" data-product-id="@item.IdProduct">
+                        <span class="star star4 "
+                              data-rating="4"><i class="fa fa-star"></i></span>
+                    </a>
+                    <a href="/Products/Rating/@item.IdProduct?star=5" class="star-link" data-product-id="@item.IdProduct">
+                        <span class="star star5 "
+                              data-rating="5"><i class="fa fa-star"></i></span>
+                    </a>
+                </div>
+                <!-- /product info -->
+                <div class="product--button">
+                    <a href="/Cart/Buy/@item.IdProduct"><i class="fa-solid fa-cart-plus  margin--right-5px"></i>Thêm vào giỏ hàng</a>
+                </div>
+            </div>
+            <!-- /product 1 -->
+        }
+    </div>
+    <!--/content  -->
+</div>
+<!-- Hot Sale End -->
+<!-- Sản phẩm nổi bật -->
+<div class="featured__product container">
+    <!-- title -->
+    <div class="featured__product__title">
+        <a href="/Products/Category">
+            <h2>SẢN PHẨM NỔI BẬT</h2>
+        </a>
+        <a class="display-all" href="/Products/Category">
+            Xem tất cả
+        </a>
+        <ul>
+            @{
+                var list_categories_hot = GetCategoriesHot();
+            }
+            @foreach(var item in list_categories_hot)
+            {
+                <li><a href="/Products/Category/@item.IdCategory">@item.NameCategory</a></li>
+            }
+           
+            
+        </ul>
+    </div>
+    <!-- /title -->
+    <div class="featured__product__slider autoplay">
+        @{
+            //san pham noi bat
+            var hot_products = HotProducts();
+        }
+        @foreach (var item in hot_products)
+        {
+            var price_sale = (item.PriceProduct * (100 - item.DiscountProduct) / 100.0);
+            <!-- product 1 -->
+            <div class="featured__product__slider__item product--info-container">
+                <!-- product info -->
+                <div class="product--info">
+                    <a href="/Products/Detail/@item.IdProduct">
+                        <!-- img -->
+                        <div class="product--info-image">
+                            <img src="~/Upload/Products/@item.PhotoProduct" alt="@item.NameProduct">
+                        </div>
+                      @*  <div class="product--tag-tt" >
+                            @{
+                                var list_tag_sp = GetTagsTS(item.IdProduct);
+                            }
+                            @foreach (var item_tag in list_tag_sp)
+                            {
+                                <div>@item_tag.NameTag</div>
+                            }
+
+                        </div>*@
+                        <!-- /img -->
+                        <!-- name -->
+                        <div class="product--info-name">
+                            <p>@item.NameProduct</p>
+                        </div>
+                        <!-- /name -->
+                        <!-- price -->
+                        <div class="product--info-price">
+                            <p class="product__price--show">
+                                @string.Format("{0:#,0}", price_sale).Replace(",", ".")<span class="nghin_dong">₫</span>
+                            </p>
+                            <p class="product__price--through">
+                                @string.Format("{0:#,0}", @item.PriceProduct).Replace(",", ".")<span class="nghin_dong">₫</span>
+                            </p>
+                        </div>
+
+                        <!-- /price -->
+                        <div class="product__price--percent">
+                            <p class="product__price--percent-detail">
+                                Giảm&nbsp;@item.DiscountProduct%
+                            </p>
+                        </div>
+                    </a>
+                </div>
+                @{
+                    var tag_km = GetTagsKM(item.IdProduct);
+                }
+                @if (!String.IsNullOrEmpty(tag_km))
+                {
+                    <div class="product--tag-km">
+                        @tag_km
+                    </div>
+                }
+                else
+                {
+                    <div class="product--tag-km" style="background-color:#fff; border:none;">
+                    </div>
+                }
+
+                <div class="rating" data-default-rating="0">
+                    <a href="/Products/Rating/@item.IdProduct?star=1" class="star-link" data-product-id="@item.IdProduct">
+                        <span class="star star1 "
+                              data-rating="1"><i class="fa fa-star"></i></span>
+                    </a>
+                    <a href="/Products/Rating/@item.IdProduct?star=2" class="star-link" data-product-id="@item.IdProduct">
+                        <span class="star star2 "
+                              data-rating="2"><i class="fa fa-star"></i></span>
+                    </a>
+                    <a href="/Products/Rating/@item.IdProduct?star=3" class="star-link" data-product-id="@item.IdProduct">
+                        <span class="star star3 "
+                              data-rating="3"><i class="fa fa-star"></i></span>
+                    </a>
+                    <a href="/Products/Rating/@item.IdProduct?star=4" class="star-link" data-product-id="@item.IdProduct">
+                        <span class="star star4 "
+                              data-rating="4"><i class="fa fa-star"></i></span>
+                    </a>
+                    <a href="/Products/Rating/@item.IdProduct?star=5" class="star-link" data-product-id="@item.IdProduct">
+                        <span class="star star5 "
+                              data-rating="5"><i class="fa fa-star"></i></span>
+                    </a>
+                </div>
+                <!-- /product info -->
+                <div class="product--button">
+                    <a href="/Cart/Buy/@item.IdProduct"><i class="fa-solid fa-cart-plus  margin--right-5px"></i>Thêm vào giỏ hàng</a>
+                </div>
+            </div>
+            <!-- /product 1 -->
+        }
+    </div>
+</div>
+<!-- Featured phone End-->
+@{
+    //lay cac danh muc hien thi o trang chu => DisplayHomePage = 1 (table Categories)
+    var list_categories = Categories();
+}
+@foreach (var itemCategory in list_categories)
+{
+    <!-- LAPTOP -->
+    <div class="featured__product container">
+        <!-- title -->
+        <div class="featured__product__title">
+            <a href="/Products/Category/@itemCategory.IdCategory">
+                <h2>@itemCategory.NameCategory.ToUpper()</h2>
+            </a>
+            <a href="/Products/Category" class="display-all">
+                Xem tất cả
+            </a>
+            <ul>
+                @{
+                    //lay cac danh muc con thuoc danh muc cha
+                List<Category> list_sub_categories = SubCategories(itemCategory.IdCategory);
+                }
+                @foreach (var item_sub_category in list_sub_categories)
+                {
+                    <li><a href="/Products/Category/@item_sub_category.IdCategory">@item_sub_category.NameCategory</a></li>
+                }
+            </ul>
+        </div>
+        <!-- /title -->
+        <div class="featured__product__slider autoplay">
+            @{
+                //Sản phẩm thuộc danh mục
+                var products = Products(itemCategory.IdCategory);
+            }
+            @foreach (var item in products)
+            {
+                var price_sale = (item.PriceProduct * (100 - item.DiscountProduct) / 100.0);
+
+                <div class="featured__product__slider__item product--info-container">
+                    <!-- product info -->
+                    <div class="product--info">
+                        <a href="/Products/Detail/@item.IdProduct">
+                            <!-- img -->
+                            <div class="product--info-image">
+                                <img src="~/Upload/Products/@item.PhotoProduct" alt="@item.NameProduct">
+                            </div>
+                            <div class="product--tag-tt">
+                                @{
+                                    var list_tag_sp = GetTagsTS(item.IdProduct);
+                                }
+                                @foreach(var item_tag in list_tag_sp)
+                                {
+                                    <div>@item_tag.NameTag</div>
+                                }
+                               
+                            </div>
+                            <!-- /img -->
+                            <!-- name -->
+                            <div class="product--info-name">
+                                <p>@item.NameProduct</p>
+                            </div>
+                            <!-- /name -->
+                            <!-- price -->
+                            <div class="product--info-price">
+                                <p class="product__price--show">
+                                    @string.Format("{0:#,0}", price_sale).Replace(",", ".")<span class="nghin_dong">₫</span>
+                                </p>
+                                <p class="product__price--through">
+                                    @string.Format("{0:#,0}", @item.PriceProduct).Replace(",", ".")<span class="nghin_dong">₫</span>
+                                </p>
+                            </div>
+
+                            <!-- /price -->
+                            <div class="product__price--percent">
+                                <p class="product__price--percent-detail">
+                                    Giảm&nbsp;@item.DiscountProduct%
+                                </p>
+                            </div>
+                        </a>
+                    </div>
+                    @{
+                        var tag_km = GetTagsKM(item.IdProduct);
+                    }
+                    @if(!String.IsNullOrEmpty(tag_km))
+                    {
+                        <div class="product--tag-km">
+                            @tag_km
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="product--tag-km" style="background-color:#fff; border:none;">
+                        </div>
+                    }
+                   
+                    <div class="rating" data-default-rating="0">
+                        <a href="/Products/Rating/@item.IdProduct?star=1" class="star-link" data-product-id="@item.IdProduct">
+                            <span class="star star1 "
+                                  data-rating="1"><i class="fa fa-star"></i></span>
+                        </a>
+                        <a href="/Products/Rating/@item.IdProduct?star=2" class="star-link" data-product-id="@item.IdProduct">
+                            <span class="star star2 "
+                                  data-rating="2"><i class="fa fa-star"></i></span>
+                        </a>
+                        <a href="/Products/Rating/@item.IdProduct?star=3" class="star-link" data-product-id="@item.IdProduct">
+                            <span class="star star3 "
+                                  data-rating="3"><i class="fa fa-star"></i></span>
+                        </a>
+                        <a href="/Products/Rating/@item.IdProduct?star=4" class="star-link" data-product-id="@item.IdProduct">
+                            <span class="star star4 "
+                                  data-rating="4"><i class="fa fa-star"></i></span>
+                        </a>
+                        <a href="/Products/Rating/@item.IdProduct?star=5" class="star-link" data-product-id="@item.IdProduct">
+                            <span class="star star5 "
+                                  data-rating="5"><i class="fa fa-star"></i></span>
+                        </a>
+                    </div>
+                    <!-- /product info -->
+                    <div class="product--button">
+                        <a href="/Cart/Buy/@item.IdProduct"><i class="fa-solid fa-cart-plus  margin--right-5px"></i>Thêm vào giỏ hàng</a>
+                    </div>
+                </div>
+              
+            }
+
+
+        </div>
+    </div>
+    <!-- LAPTOP End-->
+}
+
+
+<!-- Ưu đãi thanh toán -->
+<div class="brand-banner container">
+    <div class="brand-banner__title">
+        <h2>ƯU ĐÃI THANH TOÁN</h2>
+    </div>
+    <div class="brand-banner__content">
+        @{
+            var adv4 = Advertisement.GetAdv(4);
+            var adv5 = Advertisement.GetAdv(5);
+            var adv6 = Advertisement.GetAdv(6);
+            var adv7 = Advertisement.GetAdv(7);
+        }
+        
+            @foreach (var item in adv4)
+            {
+               <a href="@item.LinkAdv" class="brand-banner__content__item" target="_blank">
+                    <img src="~/Upload/Adv/@item.PhotoAdv" alt=""> 
+                </a>
+            }
+             @foreach (var item in adv5)
+            {
+                <a href="@item.LinkAdv" class="brand-banner__content__item" target="_blank">
+                    <img src="~/Upload/Adv/@item.PhotoAdv" alt=""> 
+                </a>
+            }
+             @foreach (var item in adv6)
+            {
+                <a href="@item.LinkAdv" class="brand-banner__content__item" target="_blank">
+                    <img src="~/Upload/Adv/@item.PhotoAdv" alt=""> 
+                </a>
+            }
+            @foreach (var item in adv7)
+            {
+                <a href="@item.LinkAdv" class="brand-banner__content__item" target="_blank">
+                    <img src="~/Upload/Adv/@item.PhotoAdv" alt="">
+                </a>
+            }
+        
+     
+    </div>
+</div>
+
+<!-- Tin công nghệ -->
+<div class="news container" style="margin-top:25px;">
+    <div class="news__title featured__product__title">
+        <h2>TIN CÔNG NGHỆ</h2>
+        <a href="/News" class="display-all" style="margin-right:10px;">
+            Xem tất cả
+        </a>
+    </div>
+    <div class="news__content">
+        @{
+            var list_news_hot = HotNews();
+        }
+        @foreach(var item in list_news_hot)
+        {
+            <a href="/News/Detail/@item.IdNews" class="news__content__item">
+                <img src="~/Upload/News/@item.PhotoNews" alt="@item.NameNews">
+                <p>@item.NameNews</p>
+            </a>
+        }
+    </div>
+</div>
+<!--tin công nghệ End-->
+<!-- Ưu đãi thanh toán End-->
+@section scripts{
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const ratingContainers = document.querySelectorAll('.rating');
+
+            function highlightStars(rating, stars) {
+                for (let i = 0; i < stars.length; i++) {
+                    if (i < rating) {
+                        stars[i].classList.add('selected');
+                    } else {
+                        stars[i].classList.remove('selected');
+                    }
+                }
+            }
+            ratingContainers.forEach(ratingContainer => {
+                const stars = ratingContainer.querySelectorAll('.star');
+
+                // Đặt giá trị mặc định của đánh giá là 5 sao khi tải trang
+                const defaultRating = 5;
+                highlightStars(defaultRating, stars);
+
+                ratingContainer.addEventListener('mouseover', function (event) {
+                    const targetStar = event.target.closest('.star');
+                    if (targetStar) {
+                        const rating = targetStar.getAttribute('data-rating');
+                        highlightStars(rating, stars);
+                    }
+                });
+                ratingContainer.addEventListener('mouseleave', function () {
+                    highlightStars(defaultRating, stars);
+                });
+            });
+        });
+    </script>
+}

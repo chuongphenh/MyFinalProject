@@ -1,0 +1,92 @@
+﻿@{
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+@* de phan trang thi phai using cac doi tuong sau *@
+@using X.PagedList
+@using X.PagedList.Mvc.Core
+@* doi tuong thao tac file *@
+@using System.IO
+@* nhin thay file MyDbContext *@
+@using MyFinalProject.Models
+@functions {
+    public FinalDotnetProjectContext db = new FinalDotnetProjectContext();
+}
+<div class="col-md-12">
+    <div style="margin-bottom:5px;">
+        <a href="/Admin/Advertising/Create" class="btn btn-primary">Add adv</a>
+    </div>
+    <div class="panel panel-primary">
+        <div class="panel-heading">List adv</div>
+        <div class="panel-body">
+            <table class="table table-bordered table-hover">
+                <tr>
+                    <th style="width:100px;">PhotoAdv</th>
+                    <th>Name</th>
+                    <th style="width:150px;">Position</th>
+                    <th style="width:100px;"></th>
+                </tr>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @* File.Exists -> kiem tra file co ton tai khong *@
+                            @* Directory.GetCurrentDirectory() -> lay duong dan thu muc *@
+                            @if (item.PhotoAdv != null && File.Exists(Directory.GetCurrentDirectory() + "\\wwwroot\\Upload\\Adv\\" + item.PhotoAdv))
+                            {
+                                <img src="~/Upload/Adv/@item.PhotoAdv" style="width:100px;" />
+                            }
+                        </td>
+                        <td>@item.NameAdv</td>
+                        <td>
+                            @switch (item.PositionAdv)
+                            {
+                                case 1:
+                                    <text>Trang chủ( bên phải slide show- thứ 1)</text>
+                                    break;
+                                //--
+                                case 2:
+                                    <text>Trang chủ( bên phải slide show- thứ 2)</text>
+                                    break;
+                                //--
+                                case 3:
+                                    <text>Trang chủ( bên phải slide show- thứ 3)</text>
+                                    break;
+                                //--------
+                                //--------
+                                case 4:
+                                    <text>Trang chủ( ưu đãi thanh toán- thứ 1)</text>
+                                    break;
+                                case 5:
+                                    <text>Trang chủ( ưu đãi thanh toán- thứ 2)</text>
+                                    break;
+                                case 6:
+                                    <text>Trang chủ( ưu đãi thanh toán- thứ 3)</text>
+                                    break;
+                                case 7:
+                                    <text>Trang chủ( ưu đãi thanh toán- thứ 4)</text>
+                                    break;
+                            }
+                            @* @if (item.PositionAdv == 1) { <text>Trái (Dưới slide show)</text> }
+                        @if (item.PositionAdv == 2) { <text>Phải (Dưới slide show)</text> }
+                        @if (item.PositionAdv == 3) { <text>Trang sản phẩm - Banner</text> }
+                        @if (item.PositionAdv == 4) { <text>Trang sản phẩm - Dưới TAG</text> }
+                        @if (item.PositionAdv == 5) { <text>Trang sản phẩm - Dưới Popular products</text> }*@
+                        </td>
+                        <td style="text-align:center;">
+                            <a href="/Admin/Advertising/Update/@item.IdAdv">Edit</a>&nbsp;
+                            <a href="/Admin/Advertising/Delete/@item.IdAdv" onclick="return window.confirm('Are you sure?');">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </table>
+            <style type="text/css">
+                .pagination {
+                    padding: 0px;
+                    margin: 0px;
+                }
+            </style>
+            @* ham sau se thuc hien viec hien thi phan trang *@
+            @Html.PagedListPager((IPagedList)Model, p => Url.Action("Index", new { page = p }))
+        </div>
+    </div>
+</div>

@@ -1,0 +1,99 @@
+﻿@*nhan dien cac file trong thu muc Models*@
+@using MyFinalProject.Models
+@using X.PagedList.Mvc.Core
+@*khai bao kieu du lieu cua Model*@
+@model X.PagedList.IPagedList<Category>
+@*doi tuong de goi ham hien thi phan trang*@
+
+@{
+    //import file Layout.cshtml vao day
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+@functions {
+    public FinalDotnetProjectContext db = new FinalDotnetProjectContext();
+    //lay cac danh muc con tuong ung voi danh muc cha
+    public List<Category> SubCategories(int _CategoryId)
+    {
+        List<Category> list_record = db.Categories.Where(item => item.IdParent == _CategoryId).OrderByDescending(item => item.IdCategory).ToList();
+        return list_record;
+    }
+}
+
+<div class="col-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body" style="padding:0 0 20px;">
+          
+            <div class="col-lg-11 mx-auto form-container" style="margin-top:30px;">
+                <div class="d-flex justify-content-between" style="margin-bottom:20px;">
+                    <div class="gradient-text text-uppercase" style="font-size:28px; font-weight:600; padding:0; letter-spacing:2px;">Danh sách danh mục
+                    </div>
+                    <a href="/Admin/Categories/Create" type="button" class="btn btn-sm btn-outline-success btn-fw">Thêm danh mục mới</a>
+                 </div>
+                <table class="table table-bordered">
+                <thead class="table-light text-center">
+                    <tr>
+                            <th style="font-size:17px!important; font-weight:400;width:40px;">STT</th>
+                        <th style="font-size:17px!important; font-weight:400">Tên danh mục</th>
+                        <th style="font-size:17px!important; font-weight:400; width:60px;">Hiển thị ở trang chủ</th>
+                            <th style="font-size:17px!important; font-weight:400; width:100px;">Chức năng</th>
+                    </tr>
+                </thead>
+                    <tbody class=" table-success">
+                    @foreach (var (index, item) in Model.Select((value, i) => ((Model.PageNumber - 1) * Model.PageSize + i + 1, value)))
+                    {
+                        <tr>
+                                <td style="text-align:center; font-weight:500;font-size:15px;">@index</td>
+                                <td style="text-align:left;font-size:16px;padding-left:65px">@item.NameCategory</td>
+                            <td style="text-align:center;">
+                                @if (item.DisplayHomePage == 1)
+                                {
+                                        <text><span style="font-size:16px; font-weight:500" class="mdi mdi-check"></span></text>
+                                }
+                            </td>
+                            <td style="text-align:center;">
+                                <a href="/Admin/Categories/Update/@item.IdCategory" class="btn btn-sm btn-outline-primary btn-fw">Sửa</a> &nbsp;
+                                <a href="/Admin/Categories/Delete/@item.IdCategory" onclick="return window.confirm('Are you sure?');" class="btn btn-sm btn-outline-danger btn-fw">Xoá</a>
+                            </td>
+                        </tr>
+                        //lay cac danh muc con thuoc danh muc cha
+                        List<Category>list_sub_categories = SubCategories(item.IdCategory);
+                            @foreach (var (index1,subItem) in list_sub_categories.Select((value,i) => (i + 1, value)))
+                            {
+                                <tr class="table-black">
+                                <td style="padding-right:3px; text-align:right;">@index.@index1</td>
+                                    <td style="padding-left:100px; font-size:14px;">@subItem.NameCategory</td>
+                                <td style="text-align:center;">
+                                @if (subItem.DisplayHomePage == 1)
+                                {
+                                            <text><span class="mdi mdi-check" style="font-size:16px; font-weight:500"></span></text>
+                                }
+                                </td>
+                                <td style="text-align:center;">
+                                    <a href="/Admin/Categories/Update/@subItem.IdCategory" class="btn btn-sm btn-outline-primary btn-fw">Sửa</a> &nbsp;
+                                    <a href="/Admin/Categories/Delete/@subItem.IdCategory" onclick="return window.confirm('Are you sure?');" class="btn btn-sm btn-outline-danger btn-fw">Xoá</a>
+                                </td>
+                            </tr>
+                            }
+                    }
+                </tbody>
+            </table>
+            @Html.PagedListPager(Model,page => Url.Action("Index", new {page=page}) )
+        </div>
+    </div>
+    </div>
+</div>
+<style>
+    .btn.btn-fw {
+        min-width: 78px !important;
+    }
+
+    .gradient-text {
+        font-size: 56px;
+        background-image: linear-gradient(to right,#87CEEB,#2E8B57); /* Replace these colors with your desired gradient */
+        -webkit-background-clip: text; /* For Safari */
+        background-clip: text;
+        color: transparent;
+        text-align: center;
+    }
+
+</style>

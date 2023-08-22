@@ -1,0 +1,94 @@
+﻿@*nhan dien cac file trong thu muc Models*@
+@using MyFinalProject.Models
+@using X.PagedList.Mvc.Core
+@*khai bao kieu du lieu cua Model*@
+@model X.PagedList.IPagedList<Product>
+@*doi tuong de goi ham hien thi phan trang*@
+
+@{
+    //import file Layout.cshtml vao day
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+}
+@functions{
+    public FinalDotnetProjectContext db = new FinalDotnetProjectContext();
+    public string GetCategory(int _ProductId)
+    {
+        var record = (from item_category in db.Categories join item_category_product in db.CategoryProducts on item_category.IdCategory equals item_category_product.IdCategory join item_product in db.Products on item_category_product.IdProduct equals item_product.IdProduct where item_product.IdProduct == _ProductId select item_category).ToList();
+        string str = "";
+        foreach(var item in record)
+        {
+            str += "<div>" + item.NameCategory + "</div>";
+        }
+        return str;
+    }
+    public string GetTag(int _ProductId)
+    {
+        var record = (from item_tag in db.Tags join item_tag_product in db.TagProducts on item_tag.IdTag equals item_tag_product.IdTag join item_product in db.Products on item_tag_product.IdProduct equals item_product.IdProduct where item_product.IdProduct == _ProductId select item_tag).ToList();
+        string str = "";
+        foreach (var item in record)
+        {
+            str += "<div>" + item.NameTag + "</div>";
+        }
+        return str;
+    }
+}
+
+
+<div class="col-md-12">
+    <div style="margin-bottom:5px;">
+        <a href="/Admin/Products/Create" class="btn btn-primary">Create</a>
+    </div>
+    <div class="panel panel-primary">
+        <div class="panel-heading">List Products</div>
+        <div class="panel-body">
+            <table class="table table-bordered table-hover">
+                <tr>
+                    <th style="width:100px;">Photo</th>
+                    <th>Name</th>
+                    <th style="width:200px;">Danh mục sản phảm</th>
+                    <th style="width:200px;">Nhãn sản phẩm</th>
+                    <th style="width:70px; text-align:center;">Sản phẩm nối bật</th>
+                    <th style="width:120px;"></th>
+                </tr>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @*
+                                File.Exists(duongdan) tra ve true neu duongdan ton tai, nguoc lai tra ve false
+                            *@
+                            @if (item.PhotoProduct != null && File.Exists(Directory.GetCurrentDirectory() + "\\wwwroot\\Upload\\Products\\" + item.PhotoProduct))
+                            {
+                                <img src="~/Upload/Products/@item.PhotoProduct" style="width:100px;">
+                            }
+                        </td>
+                        <td>@item.NameProduct</td>
+                        <td>@Html.Raw(GetCategory(item.IdProduct))</td>
+                        <td>@Html.Raw(GetTag(item.IdProduct))</td>
+                        <td style="text-align:center;">
+                            @if(item.HotProduct==1)
+                            {
+                                <span class="mdi mdi-check"></span>
+                            }
+                        </td>
+                        <td style="text-align:center;">
+                            <a href="/Admin/Products/Update/@item.IdProduct">Update</a>&nbsp;
+                            <a href="/Admin/Products/Delete/@item.IdProduct" onclick="return window.confirm('Are you sure?');">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </table>
+            <style type="text/css">
+                .pagination {
+                    padding: 0px;
+                    margin: 0px;
+                }
+            </style>
+            @*phan trang bang tay*@
+            @*So trang: @Model.PageCount /
+            Trang hien tai: @Model.PageNumber*@
+            @*phan trang bang ham PagedListPager*@
+            @Html.PagedListPager(Model, page => Url.Action("Index", new { page = page }) )
+        </div>
+    </div>
+</div>

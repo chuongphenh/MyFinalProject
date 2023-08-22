@@ -1,0 +1,201 @@
+﻿@{
+    //import file Layout.cshtml vao day
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+    //khoi tao cac bien
+    string Name = Model != null ? Model.NameProduct : "";
+    string Description = Model != null ? Model.DescriptionProduct : "";
+    string Content = Model != null ? Model.ContentProduct : "";
+    double Price = Model != null ? Model.PriceProduct : 0;
+    double Discount = Model != null ? Model.DiscountProduct : 0;
+}
+@using MyFinalProject.Models
+@functions {
+    public FinalDotnetProjectContext db = new FinalDotnetProjectContext();
+    public List<Category> GetCategories()
+    {
+        List<Category> list_record = db.Categories.Where(item => item.IdParent == 0).OrderByDescending(item => item.IdCategory).ToList();
+        return list_record;
+    }
+    public List<Category> GetSubCategories(int _CategoryId)
+    {
+        List<Category> list_record = db.Categories.Where(item => item.IdParent == _CategoryId).OrderByDescending(item => item.IdCategory).ToList();
+        return list_record;
+    }
+    public List<Tag> GetTags()
+    {
+        List<Tag> list_record = db.Tags.OrderByDescending(item => item.IdTag).ToList();
+        return list_record;
+    }
+    //kiem tra xem ban ghi co duoc chon khong
+    public bool CheckCategory(int _ProductId, int _CategoryId)
+    {
+        var record = (from item_category in db.Categories join item_category_product in db.CategoryProducts on item_category.IdCategory equals item_category_product.IdCategory join item_product in db.Products on item_category_product.IdProduct equals item_product.IdProduct where item_product.IdProduct == _ProductId && item_category.IdCategory == _CategoryId select item_category).FirstOrDefault();
+        if (record != null)
+        {
+            return true;
+        }
+        return false;
+    }
+    //kiem tra xem ban ghi co duoc chon khong
+    public bool CheckTag(int _ProductId, int _TagId)
+    {
+        var record = (from item_tag in db.Tags join item_tag_product in db.TagProducts on item_tag.IdTag equals item_tag_product.IdTag join item_product in db.Products on item_tag_product.IdProduct equals item_product.IdProduct where item_product.IdProduct == _ProductId && item_tag.IdTag == _TagId select item_tag).FirstOrDefault();
+        if (record != null)
+        {
+            return true;
+        }
+        return false;
+    }
+}
+<div class="col-md-12">
+    <div class="panel panel-primary">
+        <div class="panel-heading">Add edit product</div>
+        <div class="panel-body">
+            @* Muốn upload file thì trong thẻ form phải có thuộc tính sau: enctype="multipart/form-data" *@
+            <form method="post" enctype="multipart/form-data" action="@ViewBag.action">
+                <!-- rows -->
+                <div class="row" style="margin-top:5px;">
+                    <div class="col-md-2">Name</div>
+                    <div class="col-md-10">
+                        <input type="text" value="@Name" name="Name" class="form-control" required>
+                    </div>
+                </div>
+                <!-- end rows -->
+                <!-- rows -->
+                <div class="row" style="margin-top:5px;">
+                    <div class="col-md-2">Category</div>
+                    <div class="col-md-10">
+                        @{
+                            //danh muc cap cha
+                            var categories = GetCategories();
+                        }
+                        @*the select muon chon nhieu option thi phai co thuoc tinh multiple*@
+                        <select name="Categories" class="form-control Categories" style="width:100%" multiple>
+                            @foreach (var item_category in categories)
+                            {
+                                string str_category_selected = "";
+                                if (Model != null && CheckCategory(Model.IdProduct, item_category.IdCategory) == true)
+                                {
+                                    str_category_selected = "selected";
+                                }
+                                <option @str_category_selected value="@item_category.IdCategory">@item_category.NameCategory</option>
+                                //lay danh muc cap con
+                                var sub_categories = GetSubCategories(item_category.IdCategory);
+                                @foreach (var item_sub_category in sub_categories)
+                                {
+                                    string str_sub_category_selected = "";
+                                    if (Model != null && CheckCategory(Model.IdProduct, item_sub_category.IdCategory) == true)
+                                    {
+                                        str_sub_category_selected = "selected";
+                                    }
+                                    <option @str_sub_category_selected value="@item_sub_category.IdCategory">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; --- @item_sub_category.NameCategory</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+                <!-- end rows -->
+                <!-- rows -->
+                <div class="row" style="margin-top:5px;">
+                    <div class="col-md-2">Tag</div>
+                    <div class="col-md-10">
+                        @{
+                            //danh muc cap cha
+                            var list_tags = GetTags();
+                        }
+                        @*the select muon chon nhieu option thi phai co thuoc tinh multiple*@
+                        <select name="Tags" class="form-control Tags" style="width:100%" multiple>
+                            @foreach (var item_tag in list_tags)
+                            {
+                                string str_category_selected = "";
+                                if (Model != null && CheckTag(Model.IdProduct, item_tag.IdTag) == true)
+                                {
+                                    str_category_selected = "selected";
+                                }
+                                <option @str_category_selected value="@item_tag.IdTag">@item_tag.NameTag</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <!-- end rows -->
+                <!-- rows -->
+                <div class="row" style="margin-top:5px;">
+                    <div class="col-md-2">Price</div>
+                    <div class="col-md-10">
+                        <input type="number" value="@Price" name="Price" class="form-control" required>
+                    </div>
+                </div>
+                <!-- end rows -->
+                <!-- rows -->
+                <div class="row" style="margin-top:5px;">
+                    <div class="col-md-2">Discount</div>
+                    <div class="col-md-10">
+                        <input type="number" value="@Discount" name="Discount" class="form-control" required>
+                    </div>
+                </div>
+                <!-- end rows -->
+                <!-- rows -->
+                <div class="row" style="margin-top:5px;">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-10">
+                        @{
+                            string strChecked = "";
+                            if (Model != null && Model.HotProduct == 1)
+                            {
+                                strChecked = "checked";
+                            }
+                        }
+                        <input type="checkbox" @strChecked id="Hot" name="Hot"> <label for="Hot">Hot</label>
+                    </div>
+                </div>
+                <!-- end rows -->
+                <!-- rows -->
+                <div class="row" style="margin-top:5px;">
+                    <div class="col-md-2">Photo</div>
+                    <div class="col-md-10">
+                        <input type="file" name="Photo">
+                    </div>
+                </div>
+                <!-- end rows -->
+                <!-- rows -->
+                <div class="row" style="margin-top:5px;">
+                    <div class="col-md-2">Description</div>
+                    <div class="col-md-10">
+                        <textarea name="Description" id="Description">@Description</textarea>
+                        <script>
+                            ClassicEditor.create(document.querySelector('#Description'));
+                        </script>
+                    </div>
+                </div>
+                <!-- end rows -->
+                <!-- rows -->
+                <div class="row" style="margin-top:5px;">
+                    <div class="col-md-2">Content</div>
+                    <div class="col-md-10">
+                        <textarea name="Content" id="Content">@Content</textarea>
+                        <script>
+                            ClassicEditor.create(document.querySelector('#Content'));
+                        </script>
+                    </div>
+                </div>
+                <!-- end rows -->
+                <!-- rows -->
+                <div class="row" style="margin-top:5px;">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-10">
+                        <input type="submit" value="Process" class="btn btn-primary">
+                    </div>
+                </div>
+                <!-- end rows -->
+            </form>
+        </div>
+    </div>
+</div>
+@section scripts {
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.Categories').select2();
+            $('.Tags').select2();
+        });
+    </script>
+}
